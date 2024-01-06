@@ -28,7 +28,7 @@ const DashboardPage = () => {
           icon={<BsCartDash size={30}/>}
           value="1.235.000"
           percent="23.50"
-          message="desde el mes pasado"
+          message="respecto al total del mes"
           colorPercent="green"
         />
        

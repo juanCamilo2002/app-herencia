@@ -5,7 +5,7 @@
     background-color: var(--bgSoft);
     top: 0;
     transition: all 0.5s ease;
-    font-family: 'Poppins', sans-serif;
+    
 }
 
 .sidebarActive {

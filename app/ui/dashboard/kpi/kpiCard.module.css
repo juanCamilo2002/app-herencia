@@ -3,7 +3,6 @@
     flex: 1;
     border-radius: 5px;
     padding: 20px;
-    font-family: 'Poppins', sans-serif;;
     flex-wrap: wrap;
 
 }
@@ -26,7 +25,7 @@
 }
 .center span{
     font-size: 40px;
-    font-weight: 900;
+    font-weight: 600;
 }
 
 .bottom{

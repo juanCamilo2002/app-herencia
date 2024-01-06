@@ -1,0 +1,22 @@
+.row {
+    height: 40px;
+}
+
+.estado{
+    display: flex;
+    justify-content: center;
+    width: 120px;
+    border-radius: 10px;
+}
+
+.estado.cancelado{
+    background-color: #01ac26;
+}
+
+.estado.pendiente{
+    background-color: #e21212;
+}
+
+.estado span{
+    color: var(--bgSoft)
+}

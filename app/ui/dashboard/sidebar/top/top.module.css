@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.5s ease;
+}
+
+.close {
+    justify-content: center;
+    transition: all 0.5s ease;
+}
+.logo {
+    object-fit: cover;
+    border-radius: 50%;
+    transition: all 0.5s ease;
+}
+
+
+
+
+
+.title {
+    font-size: 28px;
+    font-weight: 900;
+    opacity: 1;
+    visibility: visible;    
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.spanClose {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    position: absolute;
+}

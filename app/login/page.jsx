@@ -6,7 +6,7 @@ import Left from '../ui/login/Left/Left'
 import Right from '../ui/login/Right/Right'
 import styles from './page.module.css';
 import Loading from './loading';
-const page = () => {
+const Page = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   useEffect(() =>{
@@ -24,4 +24,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

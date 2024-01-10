@@ -1,11 +1,12 @@
+"use client"
 import { TbCalendarTime } from "react-icons/tb";
 import styles from "./tablesales.module.css";
 import Row from "./row/Row";
-
+import { useId } from "react";
 const sales = [
     {
         customer: "Diego Ordoñez",
-        product: "Vino Ducle",
+        product: "Vino Dulce",
         amountUnit: 2,
         priceUnit: 28000,
         total: 56000,
@@ -37,7 +38,7 @@ const sales = [
         priceUnit: 28000,
         total: 56000,
         status: false,
-        date: "Hace 1s"
+        date: "Hace 1 dia"
     },
     {
         customer: "Diego Ordoñez",
@@ -45,13 +46,14 @@ const sales = [
         amountUnit: 2,
         priceUnit: 28000,
         total: 56000,
-        status: false,
+        status: null,
         date: "Hace 1s"
     },
     
 ]
 
 const TableSales = () => {
+    const id = useId();
     return (
         <div className={styles.container}>
             <div className={styles.top}>
@@ -61,18 +63,18 @@ const TableSales = () => {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>Cliente</th>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio unidad</th>
-                        <th>Total</th>
-                        <th>Estado</th>
-                        <th>Hace</th>
+                        <th className={styles.thStart}>Cliente</th>
+                        <th className={styles.thCenter}>Producto</th>
+                        <th className={styles.thCenter}>Cantidad</th>
+                        <th className={styles.thCenter}>Precio unidad</th>
+                        <th className={styles.thCenter}>Total</th>
+                        <th className={styles.thCenter}>Estado</th>
+                        <th className={styles.thEnd}>Hace</th>
                     </tr>
                 </thead>
                 <tbody>
                     {sales.map((sale) => (
-                        <Row key={sale.customer} sale={sale}/>
+                        <Row key={id + sale.customer} sale={sale}/>
                     ))}
                 </tbody>
             </table>

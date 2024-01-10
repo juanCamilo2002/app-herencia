@@ -11,7 +11,6 @@ export const useSidebar = () => {
 }
 
 export const SidebarProvider = ({ children }) => {
-    // const [isOpen, setIsOpen] = useState(true);
     const [isOpen, setIsOpen] = useLocalStorage('sidebarOpen', true);
 
     const toggleSideBar = () => {

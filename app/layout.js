@@ -1,10 +1,11 @@
-import {  Poppins, Inter } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import './ui/globals.css';
-import { SidebarProvider } from '@/context/SidebarContext';
+import Providers from '@/context/Providers';
 
-const poppins = Poppins({ 
-  subsets: ['latin'] , 
-  weight: ["100", "200", "300", "600",  "900"]})
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ["100", "200", "300", "400", "600", "900"]
+})
 
 export const metadata = {
   title: 'Herencia App',
@@ -12,12 +13,11 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
+  
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <SidebarProvider>
-          {children}
-        </SidebarProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

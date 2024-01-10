@@ -1,0 +1,14 @@
+.container{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(2, 2, 2);
+    height: 100vh;
+}
+
+.image{
+    height: 80%;
+    width: 60%;
+    object-fit: cover;
+}

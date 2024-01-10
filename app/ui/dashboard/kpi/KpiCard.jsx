@@ -1,4 +1,4 @@
-
+import { decimalFormatter } from "@/lib/utils/currencyFormatter";
 import styles from "./kpiCard.module.css";
 
 const KpiCard = ({ title, icon, value, percent, colorPercent, message }) => {
@@ -10,7 +10,7 @@ const KpiCard = ({ title, icon, value, percent, colorPercent, message }) => {
           {icon}
       </div>
       <div className={styles.center}>
-        <span>{value}</span>
+        <span>{decimalFormatter({value})}</span>
       </div>
       <div className={styles.bottom}>
         <span className={styles.percent} style={{color: color}} >{percent}%</span>

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import styles from "./menulink.module.css";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "@/context/SidebarContext";
+import { useSidebar } from "@/context/SidebarProvider";
 const MenuLink = ({ item }) => {
     const pathname = usePathname();
     const { isOpen } = useSidebar();

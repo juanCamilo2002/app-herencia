@@ -1,6 +1,6 @@
 import { IoIosArrowBack } from "react-icons/io";
 import styles from "./btnclose.module.css";
-import { useSidebar } from "@/context/SidebarContext";
+import { useSidebar } from "@/context/SidebarProvider";
 
 
 const BtnClose = ({ toggleSideBar }) => {

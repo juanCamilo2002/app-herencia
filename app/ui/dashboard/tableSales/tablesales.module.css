@@ -1,5 +1,5 @@
 .container{
-    margin-top: 40px;
+    margin-top: 20px;
     padding: 40px;
     background-color: var(--bgSoft);
     border-radius: 5px;
@@ -26,10 +26,22 @@
 }
 
 .table th{
-    text-align: start;
+    
     color:#A8A8A8;
     font-size: 16px;
     font-weight: 600;
+}
+
+.thStart{
+    text-align: start;
+}
+
+.thCenter{
+    text-align: center;
+}
+
+.thEnd{
+    text-align: end;
 }
 
 .table td{

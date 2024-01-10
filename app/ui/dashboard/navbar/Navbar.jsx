@@ -3,10 +3,11 @@ import { capitalizeTitle } from "@/lib/utils/capitalizeWord";
 import styles from "./navbar.module.css";
 import { usePathname } from "next/navigation";
 import { IoSearchOutline } from "react-icons/io5";
-import { useSidebar } from "@/context/SidebarContext";
+import { useSidebar } from "@/context/SidebarProvider";
 import { useState } from "react";
-
+import { useSession } from 'next-auth/react';
 const Navbar = () => {
+    const {data: session, status} = useSession();
     const pathname = usePathname();
     const title = pathname.split("/").pop();
     const { isOpen } = useSidebar();
@@ -30,7 +31,7 @@ const Navbar = () => {
             </div>
             <div className={styles.right}>
                 <span className={styles.title}>Bienvenido</span>
-                <span className={styles.name}>Camilo Ordoñez</span>
+                <span className={styles.name}>{session.user.data.name}</span>
             </div>
         </div>
     );

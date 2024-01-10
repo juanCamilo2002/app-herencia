@@ -5,12 +5,20 @@ import MenuLink from "./menuLink/MenuLink";
 import styles from "./sidebar.module.css";
 import Top from "./top/Top";
 import { RiShutDownLine } from "react-icons/ri";
-import { useSidebar } from "@/context/SidebarContext";
+import { useSidebar } from "@/context/SidebarProvider";
+import { signOut } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
 
 const SideBar = () => {
     const { isOpen, toggleSideBar } = useSidebar();
-
     const classDynamic = `${styles.sidebar} ${!isOpen && styles.sidebarActive}`;
+    const router = useRouter();
+    const handleLogout = async () =>{
+        await signOut({
+            redirect: true, 
+            callbackUrl: '/login', 
+          });
+    }
     return (
         <div className={classDynamic}>
             <BtnClose toggleSideBar={toggleSideBar} />
@@ -29,7 +37,7 @@ const SideBar = () => {
                     </ul>
                 </div>
                 <div className={`${styles.bottom} ${!isOpen && styles.bottomClose}`}>
-                    <button>
+                    <button onClick={handleLogout}>
                         <RiShutDownLine size={25} />
                         <span>Cerrar Sesión</span>
                     </button>

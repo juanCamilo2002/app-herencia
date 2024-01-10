@@ -1,0 +1,66 @@
+.container{
+    position: relative;
+
+}
+
+.input{
+    padding: 15px 60px  15px 60px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    border: 1px solid #818181;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease-in-out;
+
+}
+
+.input.inputError{
+    border: 1px solid rgb(233, 65, 65);
+}
+
+.label{
+    position: absolute;
+    top: 50%;
+    left: 60px;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: var(--txtSoft);
+    padding: 0 5px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.icon{
+    position: absolute;
+    top: 60%;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 25px;
+    color: var(--txtSoft);
+}
+
+
+.input:focus~.label,
+.input:focus~.label,
+.input:not(:placeholder-shown).input:not(:focus)~.label{
+    top: 0;
+    font-size: 12px;
+    background-color: #FFF;
+    left: 10px;
+    color: #000000;
+}
+
+.input:focus{
+    border: 1px solid #000000;
+}
+
+.iconLock{
+    position: absolute;
+    top: 60%;
+    right: 20px;
+    transform: translateY(-50%);
+    font-size: 25px;
+    color: var(--txtSoft);
+    cursor: pointer;
+}

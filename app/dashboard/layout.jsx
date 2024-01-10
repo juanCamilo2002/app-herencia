@@ -6,7 +6,7 @@ import { useSidebar } from '@/context/SidebarProvider';
 import Navbar from '../ui/dashboard/navbar/Navbar';
 import Loading from '../ui/Loading/Loading';
 
-const layout = ({ children }) => {
+const Layout = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const { isOpen } = useSidebar();
 
@@ -35,4 +35,4 @@ const layout = ({ children }) => {
 
 
 
-export default layout
+export default Layout

@@ -7,7 +7,7 @@ import { useSidebar } from "@/context/SidebarProvider";
 import { useState } from "react";
 import { useSession } from 'next-auth/react';
 const Navbar = () => {
-    const {data: session, status} = useSession();
+    const { data: session } = useSession();
     const pathname = usePathname();
     const title = pathname.split("/").pop();
     const { isOpen } = useSidebar();
@@ -20,10 +20,10 @@ const Navbar = () => {
                 <span>{capitalizeTitle(title)}</span>
             </div>
             <div className={styles.center}>
-                <div 
-                className={`${styles.divInput} ${isFocus && styles.focus}`} 
-                onFocus={handleFocus}
-                onBlur={handleBlur}
+                <div
+                    className={`${styles.divInput} ${isFocus && styles.focus}`}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                 >
                     <input type="text" className={styles.input} placeholder="Buscar..." />
                     <IoSearchOutline size={20} className={styles.iconSearch} />

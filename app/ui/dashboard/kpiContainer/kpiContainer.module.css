@@ -1,6 +1,7 @@
 .kpiContainer{
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 70px;
     margin-top: 20px;
 }

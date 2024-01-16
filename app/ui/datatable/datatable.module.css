@@ -1,0 +1,22 @@
+.datatableContainer{
+    margin-top: 20px;
+    background-color: var(--bgSoft);
+    padding: 50px 40px;
+    border-radius: 5px;
+}
+
+
+.topOptions{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bottomContainer{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    
+}
+

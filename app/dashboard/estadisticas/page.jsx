@@ -1,7 +1,9 @@
+import React from 'react'
+
 const Page = () => {
   return (
     <div>
-      Pagina de clientes
+      Estadisticas
     </div>
   )
 }

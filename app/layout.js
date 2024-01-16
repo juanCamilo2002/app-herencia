@@ -1,10 +1,11 @@
 import { Poppins } from 'next/font/google'
-import './ui/globals.css';
-import Providers from '@/context/Providers';
+import '@ui/globals.css';
+import Providers from '@context/Providers';
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ["100", "200", "300", "400", "600", "900"]
+  weight: ["100", "200", "300", "400", "600", "900"],
+  display: 'swap'
 })
 
 export const metadata = {

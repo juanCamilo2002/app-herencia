@@ -1,6 +1,5 @@
-import SessionAuthProvider from './SessionAuthProvider'
-import { SidebarProvider } from './SidebarProvider'
-
+import SessionAuthProvider from './SessionAuthProvider';
+import { SidebarProvider } from './SidebarProvider';
 
 const Providers = ({ children }) => {
     return (
@@ -9,8 +8,7 @@ const Providers = ({ children }) => {
             {children}
         </SidebarProvider>
         </SessionAuthProvider>
-
-    )
+    );
 }
 
-export default Providers
+export default Providers;

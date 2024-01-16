@@ -1,7 +1,9 @@
+import React from 'react'
+
 const Page = () => {
   return (
     <div>
-      Pagina de clientes
+      <h1>Hello world</h1>
     </div>
   )
 }

@@ -35,17 +35,18 @@ const handler = NextAuth({
             return token;
         },
         session({ session, token }) {
-           
+
             session.user = token.user;
             return session;
         },
-        
+
+
     },
     pages: {
         signIn: "/login",
         callbackUrl: "/dashboard",
         verifyRequest: "/login"
-        
+
     }
 });
 

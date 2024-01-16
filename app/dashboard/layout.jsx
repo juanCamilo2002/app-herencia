@@ -1,10 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import SideBar from '../ui/dashboard/sidebar/SideBar';
+import SideBar from '@ui/dashboard/sidebar/SideBar';
 import styles from "./dashboard.module.css";
 import { useSidebar } from '@/context/SidebarProvider';
-import Navbar from '../ui/dashboard/navbar/Navbar';
-import Loading from '../ui/Loading/Loading';
+import Navbar from '@ui/dashboard/navbar/Navbar';
+import Loading from '@ui/Loading/Loading';
 
 const Layout = ({ children }) => {
     const [loading, setLoading] = useState(true);

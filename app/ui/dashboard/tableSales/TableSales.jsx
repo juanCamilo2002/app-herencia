@@ -1,10 +1,10 @@
-"use client"
+
 import { TbCalendarTime } from "react-icons/tb";
 import styles from "./tablesales.module.css";
 import Row from "./row/Row";
-import { useId } from "react";
 const sales = [
     {
+        id: 1,
         customer: "Diego Ordoñez",
         product: "Vino Dulce",
         amountUnit: 2,
@@ -14,6 +14,7 @@ const sales = [
         date: "Hace 1s"
     },
     {
+        id: 2,
         customer: "Diego Ordoñez",
         product: "Vino Ducle",
         amountUnit: 2,
@@ -23,6 +24,7 @@ const sales = [
         date: "Hace 1s"
     },
     {
+        id: 3,
         customer: "Diego Ordoñez",
         product: "Vino Ducle",
         amountUnit: 2,
@@ -32,6 +34,7 @@ const sales = [
         date: "Hace 1s"
     },
     {
+        id: 4,
         customer: "Diego Ordoñez",
         product: "Vino Ducle",
         amountUnit: 2,
@@ -41,6 +44,7 @@ const sales = [
         date: "Hace 1 dia"
     },
     {
+        id: 5,
         customer: "Diego Ordoñez",
         product: "Vino Ducle",
         amountUnit: 2,
@@ -53,7 +57,7 @@ const sales = [
 ]
 
 const TableSales = () => {
-    const id = useId();
+    
     return (
         <div className={styles.container}>
             <div className={styles.top}>
@@ -74,7 +78,7 @@ const TableSales = () => {
                 </thead>
                 <tbody>
                     {sales.map((sale) => (
-                        <Row key={id + sale.customer} sale={sale}/>
+                        <Row key={ sale.id} sale={sale}/>
                     ))}
                 </tbody>
             </table>

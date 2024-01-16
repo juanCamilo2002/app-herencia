@@ -2,7 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Loading from './ui/Loading/Loading';
+import Loading from '@ui/Loading/Loading';
 import styles from './page.module.css'
 
 export default function Home() {
@@ -14,7 +14,7 @@ export default function Home() {
     setTimeout(() => {
       setLoading(false);
     }, 3000)
-  }, []);
+  }, [session, status]);
   useEffect(() => {
     if (session) {
       router.push("/dashboard")

@@ -1,0 +1,9 @@
+.link{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #000000;
+    color: var(--txtWhite);
+    padding: 10px 20px;
+    border-radius: 5px;
+}

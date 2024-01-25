@@ -109,11 +109,11 @@ const FormuCreateSales = () => {
     if (formik.values.paymentType === "muestra") {
       formik.values.unitPrice = 0;
       formik.values.contributed = 0;
+      setTotal(0);
     }
 
    
-  }, [
-    formik.values, total]);
+  }, [formik.values, total]);
 
   return (
     <form className={styles.container} onSubmit={formik.handleSubmit}>

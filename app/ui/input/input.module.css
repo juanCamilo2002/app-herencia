@@ -1,10 +1,10 @@
 .container{
     position: relative;
-
+    flex: 1;
 }
 
-.input{
-    padding: 15px 60px  15px 60px;
+.inputIcon{
+    padding: 15px 15px  15px 60px;
     width: 100%;
     box-sizing: border-box;
     outline: none;
@@ -12,10 +12,27 @@
     border-radius: 5px;
     font-size: 15px;
     transition: all 0.3s ease-in-out;
-
 }
 
-.input.inputError{
+.input{
+    padding: 15px 60px  15px 60px;
+}
+
+.inputWithOutIcon{
+    padding: 15px 20px  15px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    border: 1px solid #818181;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease-in-out;
+}
+.inputWithOutIconPassword{
+    padding: 15px 60px  15px 15px;
+}
+
+.inputIcon.inputError{
     border: 1px solid rgb(233, 65, 65);
 }
 
@@ -23,6 +40,18 @@
     position: absolute;
     top: 50%;
     left: 60px;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: var(--txtSoft);
+    padding: 0 5px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.inputWithOutIcon~.label{
+    position: absolute;
+    top: 50%;
+    left: 20px;
     transform: translateY(-50%);
     font-size: 15px;
     color: var(--txtSoft);
@@ -41,17 +70,25 @@
 }
 
 
-.input:focus~.label,
-.input:focus~.label,
-.input:not(:placeholder-shown).input:not(:focus)~.label{
+.inputIcon:focus + .icon,
+.inputWithOutIcon:focus + .icon {
+    color: #000000; 
+}
+
+.inputWithOutIcon:focus~.label,
+.inputIcon:focus~.label,
+.inputWithOutIcon:focus~.label
+.inputIcon:focus~.label,
+.inputWithOutIcon:not(:placeholder-shown).inputWithOutIcon:not(:focus)~.label,
+.inputIcon:not(:placeholder-shown).inputIcon:not(:focus)~.label{
     top: 0;
     font-size: 12px;
     background-color: #FFF;
     left: 10px;
     color: #000000;
 }
-
-.input:focus{
+.inputWithOutIcon:focus,
+.inputIcon:focus{
     border: 1px solid #000000;
 }
 

@@ -59,7 +59,7 @@ const Right = () => {
   }
   return (
     <div className={styles.container}>
-      <form className={styles.wrapper} onSubmit={formik.handleSubmit}>
+      <form className={styles.wrapper} onSubmit={formik.handleSubmit} method='post'>
         <div className={styles.top}>
           <h2>¡Bienvenido!</h2>
           <span>iniciar sesión</span>

@@ -1,0 +1,49 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    width: 600px;
+    position: relative;
+}
+
+.options{
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+    position: absolute;
+    z-index: 999;
+    top: 100%;
+    background-color: var(--bgSoft);
+    border-radius: 5px;
+}
+
+
+/* Agregado estilo para un scroll invisible */
+.options::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+.options::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+}
+
+.option{
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.option:hover{
+    background-color: var(--bg);
+}
+
+.title{
+    font-size: 18px;
+    font-weight: 400;
+}
+.subtTitle{
+    font-size: 14px;
+    font-weight: 300;
+}

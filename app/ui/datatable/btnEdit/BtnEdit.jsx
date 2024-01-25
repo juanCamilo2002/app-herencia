@@ -1,11 +1,12 @@
 import { CiEdit } from "react-icons/ci";
 import styles from "./btnEdit.module.css";
+import Link from "next/link";
 
-const BtnEdit = () => {
+const BtnEdit = ({title, id}) => {
   return (
-    <button className={styles.button}>
+    <Link href={`/${title}/edit/${id}`} className={styles.button}>
       <CiEdit  size={20}/>
-    </button>
+    </Link>
   )
 }
 

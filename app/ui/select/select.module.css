@@ -1,0 +1,46 @@
+.container{
+    width: 100%;
+    display: flex;
+    position: relative;
+}
+
+.select{
+    flex: 1;
+    padding: 15px 60px  15px 60px;
+    border-radius: 5px;
+    font-size: 15px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.icon{
+    position: absolute;
+    top: 60%;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 25px;
+    color: var(--txtSoft);
+}
+
+.label{
+    position: absolute;
+    top: 50%;
+    left: 60px;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: var(--txtSoft);
+    padding: 0 5px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+
+
+.select:focus~.label,
+.select:not(:placeholder-shown).select:not(:focus)~.label{
+    top: 0;
+    font-size: 12px;
+    background-color: #FFF;
+    left: 10px;
+    color: #000000;
+}

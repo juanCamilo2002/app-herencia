@@ -35,7 +35,6 @@ const handler = NextAuth({
             return token;
         },
         session({ session, token }) {
-
             session.user = token.user;
             return session;
         },
@@ -44,9 +43,15 @@ const handler = NextAuth({
     },
     pages: {
         signIn: "/login",
+        signOut: "/login",
         callbackUrl: "/dashboard",
         verifyRequest: "/login"
 
+    },
+    session:{
+        maxAge: 60 * 60 * 24 * 5, 
+        revalidate: 60 * 60 * 24 * 5
+        
     }
 });
 

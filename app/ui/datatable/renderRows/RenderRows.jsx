@@ -2,52 +2,62 @@ import { formatterNumberCol } from "@/lib/utils/currencyFormatter";
 import styles from "./renderrows.module.css";
 import BtnEdit from "../btnEdit/BtnEdit";
 import BtnDelete from "../btnDelete/BtnDelete";
+import moment from "moment";
+import LoadingDatatable from "../loagingDatatable/LoadingDatatable";
 
-const renderDataCell = (column, value, urlApi, id) => {
-    const options = ["total", "priceunit"];
-    if (typeof value === "number" && options.includes(column.toLowerCase())) {
-        return (
-            <div className={styles.center}>
-                <span >{formatterNumberCol(value)}</span>
-            </div>
-        );
+const renderDataCell = (column, value, urlApi, id, getData, title) => {
+    if (value instanceof Date || column === "date") {
+        const date = moment(value);
+        return date.format("DD/MM/YYYY");
     }
 
     if (typeof value === "number") {
+        const options = ["totalprice", "unitprice"];
+        let colum = column.toLowerCase();
+
+        const formattedValue = options.includes(colum)
+            ? formatterNumberCol(value)
+            : value
+
         return (
             <div className={styles.center}>
-                <span >{value}</span>
-            </div>
-        );
-    }
-    if (column === "actions" && value === true) {
-        return (
-            <div className={styles.actions}>
-                <BtnEdit />
-                <BtnDelete urlApi={urlApi} id={id} />
+                <span >{formattedValue}</span>
             </div>
         );
     }
 
-    if (column === "status") {
+    if (column === "actions" && value === true) {
+        return (
+            <div className={styles.actions}>
+                <BtnEdit title={title} id={id}/>
+                <BtnDelete urlApi={urlApi} id={id} getData={getData} />
+            </div>
+        );
+    }
+
+    if (column === "status" || column === "pay") {
+        let className = styles.center;
         if (value === false) {
+            className += ` ${styles.pendiente}`
             return (
-                <div className={`${styles.center} ${styles.pendiente}`}>
+                <div className={className}>
                     <span>Pendiente</span>
                 </div>
             );
         }
 
-        if (value === undefined) {
+        if (value === null) {
+            className += ` ${styles.muestra}`
             return (
-                <div className={`${styles.center} ${styles.muestra}`}>
+                <div className={className}>
                     <span>Muestra</span>
                 </div>
             );
         }
 
+        className += ` ${styles.cancelado}`
         return (
-            <div className={`${styles.center} ${styles.cancelado}`}>
+            <div className={className}>
                 <span>Cancelado</span>
             </div>
         );
@@ -56,46 +66,45 @@ const renderDataCell = (column, value, urlApi, id) => {
 }
 
 
-const TableRow = ({ row, datatableKeys, urlApi }) => (
+const TableRow = ({ row, datatableKeys, urlApi, getData, title }) => (
     <tr>
         {datatableKeys.map((datatableKey) => (
             datatableKey !== 'id' && (
                 <td key={datatableKey}>
-                    {renderDataCell(datatableKey, row[datatableKey], urlApi, row['id'])}
+                    {renderDataCell(datatableKey, row[datatableKey], urlApi, row['id'], getData, title)}
                 </td>
             )
         ))}
     </tr>
 );
 
-const RenderRows = ({ currentData, datatableKeys, urlApi }) => {
+const RenderRows = ({ currentData, datatableKeys, urlApi, getData, columns, loading, title }) => {
+    const noDataMessage = (
+        <tr>
+            <td colSpan={columns.length} style={{ textAlign: "center" }}>
+                No hay datos que mostrar
+            </td>
+        </tr>
+    );
+
+    const dataRows = currentData.map((row, index) => (
+        <TableRow
+            key={index}
+            row={row}
+            datatableKeys={datatableKeys}
+            urlApi={urlApi}
+            getData={getData}
+            title={title}
+        />
+    ));
     return (
         <>
             {
-                currentData.length === 0
-                    ? (
-                        <tr >
-                            <td colSpan={datatableKeys.length} style={{ textAlign: "center" }}>
-                                No hay datos que mostrar
-                            </td>
-                        </tr>)
-                    : (
-                        currentData.map((row, index) => (
-                            <TableRow
-                                key={index}
-                                row={row}
-                                datatableKeys={datatableKeys}
-                                urlApi={urlApi}
-                            />
-                        )))
+                loading 
+                ? <LoadingDatatable colSpan={columns.length}/> 
+                : (currentData.length === 0 ? (noDataMessage) : (dataRows))
             }
         </>
     )
 }
-
-
-
 export default RenderRows;
-
-
-

@@ -5,7 +5,7 @@ import { IoAddOutline } from "react-icons/io5";
 const ButtonCreate = ({title}) => {
     return (
         <Link
-            href={`/dashboard/${title}/create`}
+            href={`/${title}/create`}
             className={styles.link}
         >
             <IoAddOutline size={20}/>

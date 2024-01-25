@@ -15,16 +15,17 @@ export default function Home() {
       setLoading(false);
     }, 3000)
   }, [session, status]);
+  
   useEffect(() => {
     if (session) {
       router.push("/dashboard")
     }
-  }, [status, router])
+  }, [status, router, session])
   return (
-    <>{
+    <div className={styles.container}>{
       loading ? <Loading />:<h1>Home page</h1>
     }
-    </>
+    </div>
   )
 }
 

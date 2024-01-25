@@ -7,7 +7,7 @@ import ButtonCreate from "./buttonCreate/ButtonCreate";
 import SelectRows from "./selectRows/SelectRows";
 import Table from "./table/Table";
 
-const Datatable = ({ columns, data, defaultPageSizeOptions, title, urlApi }) => {
+const Datatable = ({ columns, data, defaultPageSizeOptions, title, urlApi, getData, loading }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(defaultPageSizeOptions[0]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -20,11 +20,12 @@ const Datatable = ({ columns, data, defaultPageSizeOptions, title, urlApi }) => 
     const filteredData = data.filter((row) => {
         return datatableKeys.some((datatableKey) => {
             const cellValue = row[datatableKey];
-            if (datatableKey === 'status') {
+            const options = ["status", "pay"];
+            if (options.includes(datatableKey.toLowerCase())) {
                 const statusMapping = {
                     true: 'Cancelado',
                     false: 'Pendiente',
-                    undefined: 'Muestra',
+                    null: 'Muestra',
                 };
 
 
@@ -73,6 +74,9 @@ const Datatable = ({ columns, data, defaultPageSizeOptions, title, urlApi }) => 
                 currentData={currentData}
                 datatableKeys={datatableKeys}
                 urlApi={urlApi}
+                getData = {getData}
+                loading = {loading}
+                title={title}
             />
 
             <div className={styles.bottomContainer}>

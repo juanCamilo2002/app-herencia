@@ -1,7 +1,7 @@
 import RenderRows from "../renderRows/RenderRows";
 import styles from "./table.module.css";
 
-const Table = ({columns, currentData, datatableKeys, urlApi}) => {
+const Table = ({columns, currentData, datatableKeys, urlApi, getData, loading, title}) => {
     return (
         <table className={styles.datatable}>
             <thead>
@@ -16,6 +16,10 @@ const Table = ({columns, currentData, datatableKeys, urlApi}) => {
                     currentData={currentData}
                     datatableKeys={datatableKeys}
                     urlApi={urlApi}
+                    getData={getData}
+                    columns={columns}
+                    loading = {loading}
+                    title = {title}
                 />
             </tbody>
         </table>

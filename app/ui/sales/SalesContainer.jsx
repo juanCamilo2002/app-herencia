@@ -31,7 +31,7 @@ const SalesContainer = () => {
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [getData]);
 
 
     const columns = [

@@ -113,11 +113,7 @@ const FormuCreateSales = () => {
 
    
   }, [
-    formik.values.unitPrice,
-    formik.values.unitAmount,
-    formik.values.contributed,
-    total,
-    formik.values.paymentType,]);
+    formik.values, total]);
 
   return (
     <form className={styles.container} onSubmit={formik.handleSubmit}>

@@ -26,7 +26,7 @@ const InputDataFilter = ({ setValue, filteredKeys, setValueInput, getDataFilter,
 
     useEffect(() => {
         getData();
-    }, [token]);
+    }, [token, getData]);
 
 
     const handleChange = (e) => {

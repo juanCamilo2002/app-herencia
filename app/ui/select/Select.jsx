@@ -19,7 +19,7 @@ const Select = ({ icon, name, onChange, onBlur, value, onFocus, autoComplete, re
             >
                 <option selected value="">seleccionar</option>
                 {options.map((o) => (
-                     <option value={o}>{capitalizeTitle(o)}</option>
+                     <option key={o} value={o}>{capitalizeTitle(o)}</option>
                 ))}
                 
             </select>

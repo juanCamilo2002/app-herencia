@@ -1,7 +1,7 @@
 import styles from "./modal.module.css";
 import { useState, useEffect } from "react";
 
-const Modal = ({ textBody, icon, subimt, onClose, onCancel, onAccept }) => {
+const Modal = ({ textBody, nameBtn, icon, subimt, bgColor, onClose, onCancel, onAccept, btnCancelDisabled }) => {
     const [isOpen, setIsOpen] = useState(true);
 
     useEffect(() => {
@@ -45,13 +45,24 @@ const Modal = ({ textBody, icon, subimt, onClose, onCancel, onAccept }) => {
         <div className={isOpen ? styles.container : styles.hidden} style={modalStyle}>
             <div className={styles.cardModal}>
                 <div className={styles.top}>
-                    <div className={styles.iconContainer}>{icon}</div>
+                    <div
+                        className={styles.iconContainer}
+                        style={{ backgroundColor: bgColor ? bgColor : "rgb(176, 192, 187)" }}>
+                        {icon}
+                    </div>
                 </div>
                 <div className={styles.body}>
                     <span>{textBody}</span>
                 </div>
                 <div className={styles.footer}>
-                    {!subimt && <button className={styles.cancelar} onClick={handleClose}>Cerrar</button>}
+                    {!subimt &&
+                        <button
+                            disabled = {btnCancelDisabled}
+                            className={styles.cancelar}
+                            onClick={handleClose}>
+                            {nameBtn ? nameBtn : "Cerrar"}
+                            
+                        </button>}
                     {subimt && (
                         <>
                             <button className={styles.cancelar} onClick={onCancel}>Cancelar</button>

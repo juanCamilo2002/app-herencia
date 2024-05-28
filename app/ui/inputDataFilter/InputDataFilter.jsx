@@ -1,16 +1,15 @@
 "use client"
 import { useEffect, useState } from 'react';
-import Input from '../../input/Input'
+import Input from '../input/Input'
 import styles from "./inputDataFilter.module.css";
 import { useSession } from 'next-auth/react';
 
-const InputDataFilter = ({ setValue, filteredKeys, setValueInput, getDataFilter, placeholder, icon }) => {
+const InputDataFilter = ({ setValue, filteredKeys, setValueInput, getDataFilter, placeholder, icon, value }) => {
     const { data: session } = useSession();
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isOptionsVisible, setOptionsVisible] = useState(false);
     const token = session?.user?.data?.accessToken;
-
 
     const getData = async () => {
         try {
@@ -26,13 +25,14 @@ const InputDataFilter = ({ setValue, filteredKeys, setValueInput, getDataFilter,
 
     useEffect(() => {
         getData();
-    }, [token]);
+        if(value) setSearchTerm(value);
+    }, [token, value]);
 
 
     const handleChange = (e) => {
         setSearchTerm(e.target.value);
         setOptionsVisible(true);
-        if(e.target.value === ""){
+        if (e.target.value === "") {
             setValue("");
         }
     }
@@ -46,7 +46,7 @@ const InputDataFilter = ({ setValue, filteredKeys, setValueInput, getDataFilter,
 
 
     const filteredData = data.filter((c) => {
-        const stringValue = searchTerm.toLocaleLowerCase();
+        const stringValue = searchTerm.toLowerCase();
         return filteredKeys.some((key) => c[key].toLowerCase().includes(stringValue));
     });
 

@@ -10,7 +10,7 @@ import { FiTrash } from "react-icons/fi";
 const BtnDelete = ({ urlApi, id, getData }) => {
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const token = session.user.data.accessToken;
+  const token = session?.user.data.accessToken;
 
   const handleDelete = () => {
     setIsModalOpen(true);

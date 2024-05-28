@@ -10,7 +10,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import { CreateSale, getCustomers, getProducts } from "@/lib/utils/api";
-import InputDataFilter from "./inputDataFilter/InputDataFilter";
+import InputDataFilter from "../inputDataFilter/InputDataFilter";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Modal from "../modal/Modal";
@@ -18,11 +18,15 @@ import { VscError } from "react-icons/vsc";
 import { TbCurrencyDollarOff } from "react-icons/tb";
 import { BsBagCheck } from "react-icons/bs";
 import Select from "../select/Select";
+import ReactLoading from "react-loading";
+import { CiCircleCheck } from "react-icons/ci"
 
 const FormuCreateSales = () => {
   const router = useRouter();
   const [idCustomer, setIdCustomer] = useState(null);
-  const [showModalError, setShowModalError] = useState(false)
+  const [showModalError, setShowModalError] = useState(false);
+  const [showModalSubmit, setShowModalSubmit] = useState(false);
+  const [loadingSubmitting, setloadingSubmitting] = useState(false);
   const [formuError, setFormuError] = useState(null);
   const [idProduct, setIdProduct] = useState(null);
   const [total, setTotal] = useState(0);
@@ -35,6 +39,10 @@ const FormuCreateSales = () => {
 
   const handleCloseModalError = () => {
     setShowModalError(false)
+  }
+
+  const handleAccept = () => {
+    router.push("/dashboard/ventas");
   }
 
 
@@ -69,6 +77,7 @@ const FormuCreateSales = () => {
     },
     validationSchema: createSaleSchema,
     onSubmit: async (values, { setFieldError }) => {
+
       if (idCustomer && idProduct) {
         values.customerId = idCustomer;
         values.productId = idProduct;
@@ -79,13 +88,10 @@ const FormuCreateSales = () => {
           handleOpenModalError();
           return setFormuError("Total abonado supera total de la venta");
         }
-        const res = await CreateSale(session.user.data.accessToken, formik.values);
-
-        if (!res.data.error) {
-          router.push("/dashboard/ventas");
-        }
-
-
+        setShowModalSubmit(true);
+        setloadingSubmitting(true);
+        await CreateSale(session.user.data.accessToken, formik.values);
+        setloadingSubmitting(false);
       } else {
         if (!idCustomer) {
           setFieldError("customerId", "Cliente está vacío");
@@ -99,149 +105,173 @@ const FormuCreateSales = () => {
 
 
   useEffect(() => {
-    if (formik.values.unitPrice && formik.values.unitAmount) {
-      setTotal(formik.values.unitPrice * formik.values.unitAmount);
-    }
-    if (total && formik.values.contributed || formik.values.contributed === 0) {
-      setHasNotPaid(total - formik.values.contributed);
-    }
-
     if (formik.values.paymentType === "muestra") {
       formik.values.unitPrice = 0;
       formik.values.contributed = 0;
       setTotal(0);
     }
+    if (formik.values.paymentType !== "muestra") {
+      setTotal(formik.values.unitPrice * formik.values.unitAmount);
+      setHasNotPaid(total - formik.values.contributed);
 
-   
+    }
+
+
+
   }, [formik.values, total]);
 
   return (
-    <form className={styles.container} onSubmit={formik.handleSubmit}>
-      <div>
-        <InputDataFilter
-          setValue={setIdCustomer}
-          filteredKeys={["name", "company"]}
-          setValueInput="company"
-          getDataFilter={getCustomers}
-          placeholder="Cliente"
-          icon={<IoPersonOutline />}
-        />
-
-        {
-          formik.touched.customerId
-          && formik.errors.customerId
-          && <span className={styles.error}>{formik.errors.customerId}</span>}
-      </div>
-      <div>
-        <InputDataFilter
-          setValue={setIdProduct}
-          filteredKeys={["name"]}
-          setValueInput="name"
-          getDataFilter={getProducts}
-          placeholder="Producto"
-          icon={<MdOutlineShoppingBag />}
-        />
-        {
-          formik.touched.productId
-          && formik.errors.productId
-          && <span className={styles.error}>{formik.errors.productId}</span>}
-      </div>
-
-      <div className={styles.formGroup}>
-        <div className={styles.formInput}>
-          <Input
-            icon={<PiHash />}
-            label={"Cantidad"}
-            name="unitAmount"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.unitAmount}
-            type="number"
+    <>
+      <form className={styles.container} onSubmit={formik.handleSubmit}>
+        <div>
+          <InputDataFilter
+            setValue={setIdCustomer}
+            filteredKeys={["name", "company"]}
+            setValueInput="company"
+            getDataFilter={getCustomers}
+            placeholder="Cliente"
+            icon={<IoPersonOutline />}
           />
-          {formik.touched.unitAmount
-            && formik.errors.unitAmount
-            && <span className={styles.error}>{formik.errors.unitAmount}</span>}
+
+          {
+            formik.touched.customerId
+            && formik.errors.customerId
+            && <span className={styles.error}>{formik.errors.customerId}</span>}
         </div>
-        <div className={styles.formInput}>
-          <Input
-            icon={<BsCurrencyDollar />}
-            label={"Precio unidad"}
-            name="unitPrice"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.unitPrice}
-            type="number"
+        <div>
+          <InputDataFilter
+            setValue={setIdProduct}
+            filteredKeys={["name"]}
+            setValueInput="name"
+            getDataFilter={getProducts}
+            placeholder="Producto"
+            icon={<MdOutlineShoppingBag />}
           />
           {
-            formik.touched.unitPrice
-            && formik.errors.unitPrice
-            && <span className={styles.error}>{formik.errors.unitPrice}</span>}
+            formik.touched.productId
+            && formik.errors.productId
+            && <span className={styles.error}>{formik.errors.productId}</span>}
         </div>
-      </div>
-      <div className={styles.formGroup}>
-        <div className={styles.formInput}>
-          <Select
-            icon={<MdOutlinePayment />}
-            label={"Tipo de pago"}
-            name="paymentType"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.paymentType}
-            options={['contado', 'muestra', 'en consignación']}
-          />
-          {
-            formik.touched.paymentType
-            && formik.errors.paymentType
-            && <span className={styles.error}>{formik.errors.paymentType}</span>}
-        </div>
-        <div className={styles.formInput}>
-          <Input
-            icon={<IoIosAddCircleOutline />}
-            label={"Total abonado"}
-            name="contributed"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.contributed}
-            type="number"
-          />
-          {
-            formik.touched.contributed
-            && formik.errors.contributed
-            && <span className={styles.error}>{formik.errors.contributed}</span>}
-        </div>
-      </div>
-      <div className={styles.formGroup}>
-        <div className={styles.formInput}>
-          <Input
-            icon={<BsBagCheck />}
-            label={"Total"}
-            value={total}
-            readonly={true}
-          />
-        </div>
-        <div className={styles.formInput}>
-          <Input
-            icon={<TbCurrencyDollarOff />}
-            label={"Debe"}
-            value={hasNotPaid}
-            readonly={true}
-          />
-        </div>
-      </div>
-      <div className={styles.formGroup}>
 
-      </div>
-      {showModalError &&
+        <div className={styles.formGroup}>
+          <div className={styles.formInput}>
+            <Input
+              icon={<PiHash />}
+              label={"Cantidad"}
+              name="unitAmount"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.unitAmount}
+              type="number"
+            />
+            {formik.touched.unitAmount
+              && formik.errors.unitAmount
+              && <span className={styles.error}>{formik.errors.unitAmount}</span>}
+          </div>
+          <div className={styles.formInput}>
+            <Input
+              icon={<BsCurrencyDollar />}
+              label={"Precio unidad"}
+              name="unitPrice"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.unitPrice}
+              type="number"
+            />
+            {
+              formik.touched.unitPrice
+              && formik.errors.unitPrice
+              && <span className={styles.error}>{formik.errors.unitPrice}</span>}
+          </div>
+        </div>
+        <div className={styles.formGroup}>
+          <div className={styles.formInput}>
+            <Select
+              icon={<MdOutlinePayment />}
+              label={"Tipo de pago"}
+              name="paymentType"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.paymentType}
+              options={['contado', 'muestra', 'en consignación']}
+            />
+            {
+              formik.touched.paymentType
+              && formik.errors.paymentType
+              && <span className={styles.error}>{formik.errors.paymentType}</span>}
+          </div>
+          <div className={styles.formInput}>
+            <Input
+              icon={<IoIosAddCircleOutline />}
+              label={"Total abonado"}
+              name="contributed"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.contributed}
+              type="number"
+            />
+            {
+              formik.touched.contributed
+              && formik.errors.contributed
+              && <span className={styles.error}>{formik.errors.contributed}</span>}
+          </div>
+        </div>
+        <div className={styles.formGroup}>
+          <div className={styles.formInput}>
+            <Input
+              icon={<BsBagCheck />}
+              label={"Total"}
+              value={total}
+              readonly={true}
+            />
+          </div>
+          <div className={styles.formInput}>
+            <Input
+              icon={<TbCurrencyDollarOff />}
+              label={"Debe"}
+              value={hasNotPaid}
+              readonly={true}
+            />
+          </div>
+        </div>
+        <div className={styles.formGroup}>
+
+        </div>
+        {showModalError &&
+          (
+            <Modal
+              icon={< VscError size={40} color="red" />}
+              textBody={formuError}
+              onClose={handleCloseModalError}
+            />)}
+
+
+        <div className={styles.formGroupBttm}>
+          <button className={styles.btnSubmit} type="submit">Agregar venta</button>
+        </div>
+
+      </form>
+      {showModalSubmit &&
         (
           <Modal
-            icon={< VscError size={40} color="red" />}
-            textBody={formuError}
-            onClose={handleCloseModalError}
+            icon={loadingSubmitting
+              ? (
+                <ReactLoading
+                  type='bubbles'
+                  color='#000000'
+                  height={40}
+                  width={40}
+                />)
+              : (<CiCircleCheck size={40} color="green" />)}
+            textBody={loadingSubmitting
+              ? "Creando venta"
+              : "Venta creada con exito"}
+            nameBtn={"Aceptar"}
+            btnCancelDisabled={loadingSubmitting}
+            bgColor={!loadingSubmitting && "rgb(84, 227, 124)"}
+            onClose={!loadingSubmitting && handleAccept}
           />)}
-      <div className={styles.formGroupBttm}>
-        <button className={styles.btnSubmit} type="submit">Agregar venta</button>
-      </div>
-    </form>
+    </>
   );
 }
 

@@ -35,7 +35,7 @@ const Right = () => {
       const res = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false
+        redirect: false,
       })
       if (res?.error) {
         setError(res.error)

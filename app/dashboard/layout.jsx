@@ -9,12 +9,12 @@ import Loading from '@ui/Loading/Loading';
 const Layout = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const { isOpen } = useSidebar();
-
     useEffect(() => {
         setTimeout(() => {
             setLoading(false);
-        }, 3000)
+        }, 1000)
     }, []);
+
     return (
         <>
             {loading ?

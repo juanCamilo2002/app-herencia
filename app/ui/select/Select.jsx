@@ -17,7 +17,7 @@ const Select = ({ icon, name, onChange, onBlur, value, onFocus, autoComplete, re
                 autoComplete={autoComplete}
                 readOnly={readOnly}
             >
-                <option selected value="">seleccionar</option>
+                <option value="">seleccionar</option>
                 {options.map((o) => (
                      <option key={o} value={o}>{capitalizeTitle(o)}</option>
                 ))}

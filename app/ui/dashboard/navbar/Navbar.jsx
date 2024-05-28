@@ -31,7 +31,7 @@ const Navbar = () => {
             </div>
             <div className={styles.right}>
                 <span className={styles.title}>Bienvenido</span>
-                <span className={styles.name}>{session.user.data.name}</span>
+                <span className={styles.name}>{session?.user.data.name}</span>
             </div>
         </div>
     );

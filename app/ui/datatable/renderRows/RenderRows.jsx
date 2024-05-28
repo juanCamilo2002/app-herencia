@@ -3,7 +3,7 @@ import styles from "./renderrows.module.css";
 import BtnEdit from "../btnEdit/BtnEdit";
 import BtnDelete from "../btnDelete/BtnDelete";
 import moment from "moment";
-import LoadingDatatable from "../loagingDatatable/LoadingDatatable";
+import LoadingDatatable from "../loadingDatatable/LoadingDatatable";
 
 const renderDataCell = (column, value, urlApi, id, getData, title) => {
     if (value instanceof Date || column === "date") {

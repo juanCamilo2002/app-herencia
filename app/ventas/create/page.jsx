@@ -7,9 +7,10 @@ const Page = () => {
   return (
     <div className={styles.container}>
       <Top />
+      <h1 className={styles.title}>Crear Venta</h1>
       <FormuCreateSales />
     </div>
   )
 }
 
-export default Page
+export default Page;

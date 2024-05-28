@@ -30,16 +30,16 @@ const handler = NextAuth({
         })
     ],
     callbacks: {
-        jwt({ account, token, user, profile, session }) {
-            if (user) token.user = user;
+        async jwt({ account, token, user }) {
+            if (user) {
+                token.user = user;
+            }
             return token;
         },
         session({ session, token }) {
             session.user = token.user;
             return session;
         },
-
-
     },
     pages: {
         signIn: "/login",
@@ -48,10 +48,9 @@ const handler = NextAuth({
         verifyRequest: "/login"
 
     },
-    session:{
-        maxAge: 60 * 60 * 24 * 5, 
-        revalidate: 60 * 60 * 24 * 5
-        
+    session: {
+        maxAge: 60 * 60 ,
+        revalidate: 60 * 60,
     }
 });
 

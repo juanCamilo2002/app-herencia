@@ -26,7 +26,8 @@ export const useAuth = () => {
     }
   };
 
-  const signOut = () => {
+  const signOut = async () => {
+    await authService.logout();
     dispatch(logout());  
     localStorage.removeItem('accessToken');
   };

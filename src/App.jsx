@@ -1,35 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router';
+import LoginPage from './features/auth/pages/LoginPage';
+import Privateroute from './components/PrivateRoute';
+import { useSelector } from 'react-redux';
+import Dashboard from './features/dashboard/pages/Dashboard';
+import NotFoundPage from './features/not-found/pages/NotFoundPage';
+import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage';
+import DefaultLayout from './layout/DefaultLayout';
+import Sales from './features/sales/pages/Sales';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route element={<Privateroute isAuthenticated={isAuthenticated} />}>
+          <Route element={<DefaultLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path='/sales' element={<Sales />} />
+          </Route>
+        </Route>
 
-export default App
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;

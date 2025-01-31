@@ -43,29 +43,31 @@ const stats = [
 
 
 const Dashboard = () => {
-  // const [profile, setProfile] = useState(null);
-  // const { signOut } = useAuth();
-  // const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
 
 
 
-  // const fetchProfile = async () => {
-  //   try {
-  //     const response = await api.get('/auth/profile');
-  //     setProfile(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const fetchProfile = async () => {
+    try {
+      const response = await api.get('/auth/profile');
+      setProfile(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchProfile();
-  // }, []);
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
-  // const handleLogout = () => {
-  //   navigate("/login");
-  //   signOut();
-  // }
+  const handleLogout = () => {
+    navigate("/login");
+    signOut();
+  }
+
+  console.log(profile);
 
   return (
     <>
@@ -80,6 +82,20 @@ const Dashboard = () => {
             iconPercent={stat.iconPercent}
           />
         ))}
+      </div>
+
+      <div className='mt-6'>
+        <h2 className='text-lg font-semibold text-black dark:text-white'>Profile</h2>
+        <div className='mt-4'>
+          <p className='text-sm text-black dark:text-white'>Name: {profile?.data?.name}</p>
+          <p className='text-sm text-black dark:text-white'>Email: {profile?.data?.email}</p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className='mt-4 px-4 py-2.5 bg-primary text-white rounded-md shadow-sm dark:bg-primarydark dark:text-black'
+        >
+          Logout
+        </button>
       </div>
     </>
   )

@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./*"],
-      "@ui/*": ["./app/ui/*"],
-      "@context/*": ["./context/*"]
-    }
-  }
-}

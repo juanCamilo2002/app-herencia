@@ -24,23 +24,30 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    // Si el error es 401 y la solicitud es al endpoint de login, no intentar refrescar
+    if (error.response?.status === 401) {
+      if (originalRequest.url.includes('/auth/login')) {
+        return Promise.reject(error);
+      }
 
-      try {
-        // Solicitar un nuevo access token
-        const response = await api.post('/auth/refresh');
+      // Evitar reintentar más de una vez
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+          // Solicitar un nuevo access token
+          const response = await api.post('/auth/refresh');
 
-        const newAccessToken = response.data.accessToken;
-        localStorage.setItem('accessToken', newAccessToken);
+          const newAccessToken = response.data.accessToken;
+          localStorage.setItem('accessToken', newAccessToken);
 
-        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        console.error('Error al refrescar el token:', refreshError);
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          return api(originalRequest);
+        } catch (refreshError) {
+          console.error('Error al refrescar el token:', refreshError);
+          localStorage.removeItem('accessToken');
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        }
       }
     }
 

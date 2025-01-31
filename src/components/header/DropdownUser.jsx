@@ -43,9 +43,9 @@ const DropdownUser = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut();
     navigate("/login");
-    signOut();
   }
 
   return (

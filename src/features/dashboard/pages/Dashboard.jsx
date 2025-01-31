@@ -62,9 +62,9 @@ const Dashboard = () => {
     fetchProfile();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut();
     navigate("/login");
-    signOut();
   }
 
   console.log(profile);

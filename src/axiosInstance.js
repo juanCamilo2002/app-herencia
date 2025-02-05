@@ -24,15 +24,16 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Si el error es 401 y la solicitud es al endpoint de login, no intentar refrescar
     if (error.response?.status === 401) {
-      if (originalRequest.url.includes('/auth/login')) {
+      if (originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/refresh')) {
+        // Si la solicitud fallida es al login o al refresh, eliminar el token y redirigir al login
         return Promise.reject(error);
       }
 
       // Evitar reintentar más de una vez
       if (!originalRequest._retry) {
         originalRequest._retry = true;
+
         try {
           // Solicitar un nuevo access token
           const response = await api.post('/auth/refresh');
@@ -44,6 +45,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (refreshError) {
           console.error('Error al refrescar el token:', refreshError);
+          // Si el refresh falla, eliminar el token y redirigir al login
           localStorage.removeItem('accessToken');
           window.location.href = '/login';
           return Promise.reject(refreshError);

@@ -54,7 +54,7 @@ const Dashboard = () => {
       const response = await api.get('/auth/profile');
       setProfile(response.data);
     } catch (error) {
-      console.error(error);
+      alert('Error fetching profile');
     }
   };
 
@@ -67,7 +67,6 @@ const Dashboard = () => {
     navigate("/login");
   }
 
-  console.log(profile);
 
   return (
     <>
@@ -87,7 +86,7 @@ const Dashboard = () => {
       <div className='mt-6'>
         <h2 className='text-lg font-semibold text-black dark:text-white'>Profile</h2>
         <div className='mt-4'>
-          <p className='text-sm text-black dark:text-white'>Name: {profile?.data?.name}</p>
+          <p className='text-sm text-black dark:text-white'>Name: {profile?.data?.entityId?.name} {profile?.data?.entityId?.lastName}</p>
           <p className='text-sm text-black dark:text-white'>Email: {profile?.data?.email}</p>
         </div>
         <button

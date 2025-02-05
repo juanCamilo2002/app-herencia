@@ -14,7 +14,7 @@ const NotFoundPage = () => {
               La página que estás buscando parece haber sido movida, eliminada o no existe.
             </p>
             <Link to='/' className='mt-7.5 inline-flex items-center gap-2 rounded-md bg-primary py-3 px-6 font-medium text-white hover:bg-opacity-90'>
-              <ArrowLeftIcon class="h-6 w-6 text-gray-500" />
+              <ArrowLeftIcon className="h-6 w-6 text-gray-500" />
               <span>ir a página inicio</span>
             </Link>
           </div>

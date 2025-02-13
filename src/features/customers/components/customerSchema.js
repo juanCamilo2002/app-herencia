@@ -40,7 +40,7 @@ export const validationSchema = Yup.object({
     then: (schema) => schema.required("El tipo de entidad es requerido"),
   }),
   companyName: Yup.string().required("La razón social es requerida"),
-  entityId: Yup.string().when("useExistingEntity", {
+  entityId: Yup.object().when("useExistingEntity", {
     is: true,
     then: (schema) => schema.required("La entidad es requerida"),
   }),

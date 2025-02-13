@@ -1,36 +1,66 @@
-import { useDispatch } from 'react-redux';
-import { loginSuccess, logout} from '../store/authSlice';
-import { authService } from '../services/authService';
+import { useDispatch, useSelector } from "react-redux";
+import { login, register, logout, getProfile } from "../store/authSlice";
+import { useCallback } from "react";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
+  const { loading, error, userProfile } = useSelector((state) => state.auth);
 
-  const login = async (email, password) => {
-    try {
-      const data = await authService.login(email, password);
-      localStorage.setItem('accessToken', data.accessToken);
-      dispatch(loginSuccess(data));  
-      return data;  
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Error al hacer login');
-    }
+  // Usamos useCallback para memorizar estas funciones
+  const loginUser = useCallback(
+    async (email, password) => {
+      try {
+        const data = await dispatch(login({ email, password })).unwrap();
+        return data; // Si necesitas la data después del login
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    [dispatch] // Dependencia de dispatch, no cambia entre renderizados
+  );
+
+  const registerUser = useCallback(
+    async (email, password) => {
+      try {
+        const data = await dispatch(register({ email, password })).unwrap();
+        return data; // Si necesitas la data después del registro
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    [dispatch] // Dependencia de dispatch
+  );
+
+  const signOut = useCallback(
+    async () => {
+      try {
+        await dispatch(logout()).unwrap();
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    [dispatch] // Dependencia de dispatch
+  );
+
+  const getUserProfile = useCallback(
+    async () => {
+      try {
+        const data = await dispatch(getProfile()).unwrap();
+        return data; // Devuelves el perfil si lo necesitas
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    [dispatch] // Dependencia de dispatch
+  );
+
+  return {
+    loginUser,
+    registerUser,
+    signOut,
+    getUserProfile,
+    loading,
+    error,
+    userProfile,
   };
-
-  const register = async (email, password) => {
-    try {
-      const data = await authService.register(email, password);
-      dispatch(loginSuccess(data));  
-      return data;  
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Error al registrar');
-    }
-  };
-
-  const signOut = async () => {
-    await authService.logout();
-    dispatch(logout());  
-    localStorage.removeItem('accessToken');
-  };
-
-  return { login, register, signOut };
 };

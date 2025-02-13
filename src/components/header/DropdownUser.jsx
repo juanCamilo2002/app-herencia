@@ -11,11 +11,15 @@ import LogoutIcon from '../../assets/icons/logout.svg?react';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { signOut } = useAuth();
+  const { signOut, getUserProfile, userProfile } = useAuth();
   const navigate = useNavigate();
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
+
+  useEffect(() => {
+    getUserProfile();
+  }, [getUserProfile]);
 
   // close on click outside
   useEffect(() => {
@@ -58,7 +62,7 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {userProfile?.entityId?.name}
           </span>
           <span className="block text-xs">Administrador</span>
         </span>

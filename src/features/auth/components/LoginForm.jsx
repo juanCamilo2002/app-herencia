@@ -8,7 +8,7 @@ import { EnvelopeIcon } from "@heroicons/react/24/outline";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginUser, loading, error } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -21,7 +21,7 @@ const LoginForm = () => {
     }),
     onSubmit: async (values) => {
       try {
-        await login(values.email, values.password);
+        await loginUser(values.email, values.password);
         navigate('/');
       } catch (error) {
         alert(error.message || 'Error al iniciar sesión');
@@ -57,8 +57,9 @@ const LoginForm = () => {
       <div className="mb-5">
         <input
           type="submit"
-          value="Iniciar sesión"
-          className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+          value={loading ? 'Cargando...' : 'Iniciar sesión'}	
+          disabled={loading}
+          className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90 disabled:bg-opacity-50 disabled:cursor-not-allowed disabled:border-opacity-50"
         />
       </div>
       <div className="mt-6 text-center">

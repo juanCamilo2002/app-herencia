@@ -8,6 +8,8 @@ import NotFoundPage from './features/not-found/pages/NotFoundPage';
 import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage';
 import DefaultLayout from './layout/DefaultLayout';
 import Sales from './features/sales/pages/Sales';
+import CustomersPage from './features/customers/pages/CustomersPage';
+import SellersPage from './features/sellers/pages/SellersPage';
 
 const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -20,6 +22,9 @@ const App = () => {
           <Route element={<DefaultLayout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path='/sales' element={<Sales />} />
+            <Route path='/customers' element={<CustomersPage/>} />
+            <Route path='/sellers' element={<SellersPage/>} />
+
           </Route>
         </Route>
 

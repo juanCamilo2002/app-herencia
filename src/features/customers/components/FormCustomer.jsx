@@ -10,7 +10,6 @@ import InputForm from "../../../components/forms/inputs/InputForm";
 import Select from "../../../components/forms/selects/Select";
 import { validationSchema } from "./customerSchema";
 
-
 const FormCustomer = ({ onClose, initialValues = {} }) => {
   const { addCustomer, loading, error, editCustomer } = useCustomers();
   const { identificationTypes, loadIdentificationTypes } =
@@ -68,6 +67,11 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
     onSubmit: (values, { resetForm }) => {
       values.city = values.city.value;
       values.responsibleSeller = values.responsibleSeller.value;
+      if (values.entityId){
+        values.entityId = values.entityId.value;
+      }
+
+      console.log("CLIENTE", values);
 
       if (initialValues._id) {
         const { _id, entityId, ...restValues } = values;
@@ -148,60 +152,90 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
           ) : null}
 
           {useExistingEntity ? (
-            <div className="mb-4.5">
-              <label className="mb-2.5 block text-black dark:text-white">
-                Seleccionar Entidad Existente{" "}
-                <span className="text-meta-1">*</span>
-              </label>
-              <div className="relative z-20 bg-transparent dark:bg-form-input">
-                <select
-                  className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                  onChange={(e) => {
-                    const selectedEntityId = e.target.value;
-                    formik.setFieldValue("entityId", selectedEntityId);
+            <>
+              <SelectFilter
+                options={entities.map((entity) => ({
+                  label: `${entity.name} ${entity.lastName} - ${entity.identification}`,
+                  value: entity._id,
+                }))}
+                name="entityId"
+                label={"Seleccionar Entidad Existente"}
+                placeholder={"Seleccionar"}
+                required
+                maxWidth
+                value={formik.values.entityId}
+                onChange={(selectedOption) => {
+                  formik.setFieldValue("entityId", selectedOption);
+                  formik.setFieldTouched("entityId", false);
+                }}
+                error={
+                  formik.errors.entityId &&
+                  formik.touched.entityId
+                    ? formik.errors.entityId
+                    : null
+                }
+                onBlur={() => {
+                  if (!formik.values.entityId) {
+                    formik.setFieldTouched("entityId", true);
+                  }
+                }}
+              />
+              <div className="mb-4.5">
+                <label className="mb-2.5 block text-black dark:text-white">
+                  Seleccionar Entidad Existente{" "}
+                  <span className="text-meta-1">*</span>
+                </label>
+                <div className="relative z-20 bg-transparent dark:bg-form-input">
+                  <select
+                    className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                    onChange={(e) => {
+                      const selectedEntityId = e.target.value;
+                      formik.setFieldValue("entityId", selectedEntityId);
 
-                    // Determinar el tipo de identificación según el tipo de entidad
-                    let selectedEntity = entities.find(
-                      (entity) => entity._id === selectedEntityId
-                    );
-
-                    if (selectedEntity.typeEntity === "person") {
-                      formik.setFieldValue(
-                        "companyName",
-                        `${selectedEntity.name} ${selectedEntity.lastName}`
+                      // Determinar el tipo de identificación según el tipo de entidad
+                      let selectedEntity = entities.find(
+                        (entity) => entity._id === selectedEntityId
                       );
-                    } else {
-                      formik.setFieldValue("companyName", "");
-                    }
 
-                    // Si encontramos un tipo de identificación válido, lo asignamos
-                    if (selectedIdentification) {
-                      formik.setFieldValue(
-                        "identificationTypeId",
-                        selectedIdentification._id
-                      );
-                    }
-                  }}
-                  onBlur={formik.handleBlur}
-                  name="entityId"
-                >
-                  <option value="">Seleccione una entidad</option>
-                  {entities.map((entity) => (
-                    <option key={entity._id} value={entity._id}>
-                      {entity.name} {entity.lastName} - {entity.identification}
-                    </option>
-                  ))}
-                </select>
-                <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-                  <ArrowDropDownIcon className="fill-current" />
-                </span>
+                      if (selectedEntity.typeEntity === "person") {
+                        formik.setFieldValue(
+                          "companyName",
+                          `${selectedEntity.name} ${selectedEntity.lastName}`
+                        );
+                      } else {
+                        formik.setFieldValue("companyName", "");
+                      }
+
+                      // Si encontramos un tipo de identificación válido, lo asignamos
+                      if (selectedIdentification) {
+                        formik.setFieldValue(
+                          "identificationTypeId",
+                          selectedIdentification._id
+                        );
+                      }
+                    }}
+                    onBlur={formik.handleBlur}
+                    name="entityId"
+                  >
+                    <option value="">Seleccione una entidad</option>
+                    {entities.map((entity) => (
+                      <option key={entity._id} value={entity._id}>
+                        {entity.name} {entity.lastName} -{" "}
+                        {entity.identification}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                    <ArrowDropDownIcon className="fill-current" />
+                  </span>
+                </div>
+                {formik.errors.entityId && formik.touched.entityId && (
+                  <span className="text-danger text-sm">
+                    {formik.errors.entityId}
+                  </span>
+                )}
               </div>
-              {formik.errors.entityId && formik.touched.entityId && (
-                <span className="text-danger text-sm">
-                  {formik.errors.entityId}
-                </span>
-              )}
-            </div>
+            </>
           ) : (
             <>
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -236,7 +270,7 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
                 />
               </div>
 
-              <InputForm 
+              <InputForm
                 name="email"
                 value={formik.values.email}
                 onChange={formik.handleChange}
@@ -251,7 +285,7 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
                 placeholder={"JhonDoe@gmail.com"}
                 maxWidth
               />
-              
+
               <Select
                 label={"Tipo de entidad"}
                 required
@@ -303,24 +337,22 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
                 labelOption={"label"}
               />
 
-             
-
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                
-                <InputForm 
+                <InputForm
                   name="identification"
                   value={formik.values.identification}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={
-                    formik.errors.identification && formik.touched.identification
+                    formik.errors.identification &&
+                    formik.touched.identification
                       ? formik.errors.identification
                       : null
                   }
                   label={"Número Identificación"}
                   required
                   placeholder={"10039087654"}
-                /> 
+                />
 
                 <Select
                   options={identificationTypes.map((type) => ({
@@ -344,7 +376,7 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
                 />
               </div>
 
-              <InputForm 
+              <InputForm
                 label={"Teléfono"}
                 required
                 placeholder={"313 410 1234"}
@@ -358,8 +390,8 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
                     : null
                 }
                 maxWidth
-              /> 
-              
+              />
+
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                 <InputForm
                   name="address"
@@ -427,13 +459,13 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
             )}
           </div>
 
-          <SelectFilter 
-          
+          <SelectFilter
             options={sellers.map((seller) => ({
-              label: `${seller.entityId.name} ${seller.entityId.lastName} - ${seller.entityId.identification} - ${seller.status ? "Activo" : "Inactivo"}`,
+              label: `${seller.entityId.name} ${seller.entityId.lastName} - ${
+                seller.entityId.identification
+              } - ${seller.status ? "Activo" : "Inactivo"}`,
               value: seller._id,
             }))}
-
             name="responsibleSeller"
             label={"Vendedor Responsable"}
             placeholder={"Seleccionar"}
@@ -445,7 +477,8 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
               formik.setFieldTouched("responsibleSeller", false);
             }}
             error={
-              formik.errors.responsibleSeller && formik.touched.responsibleSeller
+              formik.errors.responsibleSeller &&
+              formik.touched.responsibleSeller
                 ? formik.errors.responsibleSeller
                 : null
             }
@@ -454,9 +487,8 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
                 formik.setFieldTouched("responsibleSeller", true);
               }
             }}
-
           />
-          
+
           <button
             type="submit"
             className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray disabled:bg-opacity-50 disabled:cursor-not-allowed disabled:border-opacity-50"

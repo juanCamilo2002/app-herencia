@@ -8,6 +8,7 @@ import ChartIcon from "../assets/icons/chart.svg?react";
 import UiIcon from "../assets/icons/ui.svg?react";
 import AuthIcon from "../assets/icons/auth.svg?react";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
+import { UsersIcon } from "@heroicons/react/24/outline";
 
 
 const navLinks = [
@@ -33,6 +34,16 @@ const navLinks = [
         label: 'Perfil',
         icon: <PersonIcon className="fill-current" />,
         to: '/profile'
+      },
+      {
+        label: 'Clientes',
+        icon: <UsersIcon className="h-5 w-5 text-gray-500" />,
+        to: '/customers'
+      },
+      {
+        label: 'Vendedores',
+        icon: <ShoppingBagIcon className="h-5 w-5 text-gray-500" />,
+        to: '/sellers'
       },
       {
         label: 'Formularios',

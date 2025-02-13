@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import api from '../../../axiosInstance';
+import React from 'react'
 import { useAuth } from '../../auth/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
 import EyeIcon from '../../../assets/icons/eye.svg?react';
 import ArrowUpIcon from '../../../assets/icons/arrow-up.svg?react';
 import ArrowDownIcon from '../../../assets/icons/arrow-down.svg?react';
@@ -43,31 +41,8 @@ const stats = [
 
 
 const Dashboard = () => {
-  const [profile, setProfile] = useState(null);
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
-
-
-
-  const fetchProfile = async () => {
-    try {
-      const response = await api.get('/auth/profile');
-      setProfile(response.data);
-    } catch (error) {
-      alert('Error fetching profile');
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/login");
-  }
-
-
+  const { signOut, userProfile } = useAuth();
+  
   return (
     <>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5'>
@@ -86,11 +61,11 @@ const Dashboard = () => {
       <div className='mt-6'>
         <h2 className='text-lg font-semibold text-black dark:text-white'>Profile</h2>
         <div className='mt-4'>
-          <p className='text-sm text-black dark:text-white'>Name: {profile?.data?.entityId?.name} {profile?.data?.entityId?.lastName}</p>
-          <p className='text-sm text-black dark:text-white'>Email: {profile?.data?.email}</p>
+          <p className='text-sm text-black dark:text-white'>Name: {userProfile?.entityId?.name} {userProfile?.entityId?.lastName}</p>
+          <p className='text-sm text-black dark:text-white'>Email: {userProfile?.email}</p>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={signOut}
           className='mt-4 px-4 py-2.5 bg-primary text-white rounded-md shadow-sm dark:bg-primarydark dark:text-black'
         >
           Logout

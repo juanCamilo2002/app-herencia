@@ -90,7 +90,10 @@ const SellerList = () => {
             email: row.original.entityId.email,
             phone: row.original.entityId.phone,
             address: row.original.entityId.address,
-            city: row.original.entityId.city,
+            city: {
+              label: row.original.entityId.city,
+              value: row.original.entityId.city,
+            },
             identification: row.original.entityId.identification,
             identificationTypeId: row.original.entityId.identificationTypeId._id,
             typeEntity: row.original.entityId.typeEntity,

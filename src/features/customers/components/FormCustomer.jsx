@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ArrowDropDownIcon from "../../../assets/icons/arrow-dropdown.svg?react";
 import { useFormik } from "formik";
 import { useCustomers } from "../hooks/useCustomers";
 import { useIdentificationTypes } from "../../common/hooks/useIdentificationTypes";
@@ -54,7 +53,7 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
     identification: "",
     phone: "",
     address: "",
-    city: null,
+    city: "",
     typeEntity: "",
     companyName: "",
     responsibleSeller: null,
@@ -67,15 +66,12 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
     onSubmit: (values, { resetForm }) => {
       values.city = values.city.value;
       values.responsibleSeller = values.responsibleSeller.value;
-      if (values.entityId){
+      if (values.entityId) {
         values.entityId = values.entityId.value;
       }
 
-      console.log("CLIENTE", values);
-
       if (initialValues._id) {
         const { _id, entityId, ...restValues } = values;
-        console.log(restValues);
         editCustomer(_id, restValues);
       } else {
         addCustomer(values);
@@ -87,6 +83,7 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
     },
   });
 
+  console.log(formik.errors);
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <form onSubmit={formik.handleSubmit}>
@@ -152,90 +149,45 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
           ) : null}
 
           {useExistingEntity ? (
-            <>
-              <SelectFilter
-                options={entities.map((entity) => ({
-                  label: `${entity.name} ${entity.lastName} - ${entity.identification}`,
-                  value: entity._id,
-                }))}
-                name="entityId"
-                label={"Seleccionar Entidad Existente"}
-                placeholder={"Seleccionar"}
-                required
-                maxWidth
-                value={formik.values.entityId}
-                onChange={(selectedOption) => {
-                  formik.setFieldValue("entityId", selectedOption);
-                  formik.setFieldTouched("entityId", false);
-                }}
-                error={
-                  formik.errors.entityId &&
-                  formik.touched.entityId
-                    ? formik.errors.entityId
-                    : null
+            <SelectFilter
+              options={entities.map((entity) => ({
+                label: `${entity.name} ${entity.lastName} - ${entity.identification}`,
+                value: entity._id,
+              }))}
+              name="entityId"
+              label={"Seleccionar Entidad Existente"}
+              placeholder={"Seleccionar"}
+              required
+              maxWidth
+              value={formik.values.entityId}
+              onChange={(selectedOption) => {
+                const selectedEntityId = selectedOption.value;
+                formik.setFieldValue("entityId", selectedOption);
+                formik.setFieldTouched("entityId", false);
+                let selectedEntity = entities.find(
+                  (entity) => entity._id === selectedEntityId
+                );
+
+                if (selectedEntity.typeEntity === "person") {
+                  formik.setFieldValue(
+                    "companyName",
+                    `${selectedEntity.name} ${selectedEntity.lastName} `
+                  );
+                } else {
+                  formik.setFieldValue("companyName", "");
                 }
-                onBlur={() => {
-                  if (!formik.values.entityId) {
-                    formik.setFieldTouched("entityId", true);
-                  }
-                }}
-              />
-              <div className="mb-4.5">
-                <label className="mb-2.5 block text-black dark:text-white">
-                  Seleccionar Entidad Existente{" "}
-                  <span className="text-meta-1">*</span>
-                </label>
-                <div className="relative z-20 bg-transparent dark:bg-form-input">
-                  <select
-                    className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                    onChange={(e) => {
-                      const selectedEntityId = e.target.value;
-                      formik.setFieldValue("entityId", selectedEntityId);
-
-                      // Determinar el tipo de identificación según el tipo de entidad
-                      let selectedEntity = entities.find(
-                        (entity) => entity._id === selectedEntityId
-                      );
-
-                      if (selectedEntity.typeEntity === "person") {
-                        formik.setFieldValue(
-                          "companyName",
-                          `${selectedEntity.name} ${selectedEntity.lastName}`
-                        );
-                      } else {
-                        formik.setFieldValue("companyName", "");
-                      }
-
-                      // Si encontramos un tipo de identificación válido, lo asignamos
-                      if (selectedIdentification) {
-                        formik.setFieldValue(
-                          "identificationTypeId",
-                          selectedIdentification._id
-                        );
-                      }
-                    }}
-                    onBlur={formik.handleBlur}
-                    name="entityId"
-                  >
-                    <option value="">Seleccione una entidad</option>
-                    {entities.map((entity) => (
-                      <option key={entity._id} value={entity._id}>
-                        {entity.name} {entity.lastName} -{" "}
-                        {entity.identification}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-                    <ArrowDropDownIcon className="fill-current" />
-                  </span>
-                </div>
-                {formik.errors.entityId && formik.touched.entityId && (
-                  <span className="text-danger text-sm">
-                    {formik.errors.entityId}
-                  </span>
-                )}
-              </div>
-            </>
+              }}
+              error={
+                formik.errors.entityId && formik.touched.entityId
+                  ? formik.errors.entityId
+                  : null
+              }
+              onBlur={() => {
+                if (!formik.values.entityId) {
+                  formik.setFieldTouched("entityId", true);
+                }
+              }}
+            />
           ) : (
             <>
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -419,7 +371,6 @@ const FormCustomer = ({ onClose, initialValues = {} }) => {
                       ? formik.errors.city
                       : null
                   }
-                  formik={formik}
                   onChange={(selectedOption) => {
                     formik.setFieldValue("city", selectedOption);
                     formik.setFieldTouched("city", false);

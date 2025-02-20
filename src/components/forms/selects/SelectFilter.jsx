@@ -87,6 +87,7 @@ const SelectFilter = (props) => {
         <Select
           classNamePrefix="select"
           options={props.options}
+          defaultValue={props.defaultValue}
           value={props.value}
           name={props.name}
           onChange={props.onChange}

@@ -10,6 +10,7 @@ import DefaultLayout from './layout/DefaultLayout';
 import Sales from './features/sales/pages/Sales';
 import CustomersPage from './features/customers/pages/CustomersPage';
 import SellersPage from './features/sellers/pages/SellersPage';
+import LiquidationsPage from './features/liquidations/pages/LiquidationsPage';
 
 const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -24,6 +25,7 @@ const App = () => {
             <Route path='/sales' element={<Sales />} />
             <Route path='/customers' element={<CustomersPage/>} />
             <Route path='/sellers' element={<SellersPage/>} />
+            <Route path='/liquidations' element={<LiquidationsPage/>} />
 
           </Route>
         </Route>

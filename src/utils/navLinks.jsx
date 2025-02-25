@@ -9,6 +9,8 @@ import UiIcon from "../assets/icons/ui.svg?react";
 import AuthIcon from "../assets/icons/auth.svg?react";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { UsersIcon } from "@heroicons/react/24/outline";
+import { BanknotesIcon } from "@heroicons/react/24/outline";
+
 
 
 const navLinks = [
@@ -24,6 +26,11 @@ const navLinks = [
         label: 'Calendario',
         icon: <CalendarIcon className="fill-current" />,
         to: '/calendar'
+      },
+      {
+        label: 'Liquidaciones',
+        icon: <BanknotesIcon  className="h-5 w-5 text-gray-500" />,
+        to: '/liquidations'
       },
       {
         label: 'Ventas',
@@ -84,7 +91,7 @@ const navLinks = [
       {
         label: 'Elementos UI',
         icon: <UiIcon className="fill-current" />,
-        to: '/ui',
+        to: '/ui-elements',
         children: [
           {
             label: 'Alertas',

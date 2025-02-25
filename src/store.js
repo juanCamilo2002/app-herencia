@@ -7,6 +7,7 @@ import customersReducer from "./features/customers/store/customerSlice";
 import salesReducer from "./features/sales/store/saleSlice";
 import paymentMethodsReducer from "./features/common/store/paymentMethodSlice";
 import productsReducer from "./features/products/store/productSlice";
+import liquidationsReducer from "./features/liquidations/store/liquidationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
     sales: salesReducer,
     paymentMethods: paymentMethodsReducer,
     products: productsReducer,
+    liquidations: liquidationsReducer,
   },
 });

@@ -8,14 +8,11 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 import { useLiquidations } from "../hooks/useLiquidations";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ArrowDatatableRight from "../../../assets/icons/arrow-datatable-right.svg?react";
 import ArrowDatatableLeft from "../../../assets/icons/arrow-datatable-left.svg?react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { toZonedTime } from "date-fns-tz";
 
 const LiquidationTable = () => {
   const { liquidations, loading, error, loadLiquidations } = useLiquidations();
@@ -36,7 +33,7 @@ const LiquidationTable = () => {
       cell: ({ row }) => (
         <button
           onClick={() => row.toggleExpanded()}
-          className="text-blue-500 hover:underline flex justify-center items-center"
+          className="expander-button text-blue-500 hover:underline flex justify-center items-center"
         >
           {row.getIsExpanded() ? (
             <ChevronDownIcon className="h-5 w-5 text-gray-500" />
@@ -116,11 +113,15 @@ const LiquidationTable = () => {
       accessorKey: "date",
       header: "Fecha",
       cell: ({ getValue }) => {
-        const localDate = toZonedTime(getValue(), "America/Bogota");
+        const fecha = new Date(getValue());
+        const fechaUTC = new Date(
+          fecha.getUTCFullYear(),
+          fecha.getUTCMonth(),
+          fecha.getUTCDate()
+        );
+        const fechaFormateada = fechaUTC.toLocaleDateString("es-ES");
 
-        return format(localDate, "EEEE d 'de' MMMM 'de' yyyy", {
-          locale: es,
-        });
+        return fechaFormateada;
       },
       size: 200,
     },
@@ -139,6 +140,44 @@ const LiquidationTable = () => {
     onPaginationChange: setPagination,
     getRowCanExpand: () => true, // Habilita la expansión de filas
   });
+
+  const scrollContainerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [draggingDistance, setDraggingDistance] = useState(0);
+
+  const handleMouseDown = (e) => {
+    if (e.target.closest(".expander-button")) return; // Si el clic es en la flecha, no activar arrastre
+
+    setIsDragging(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+    setDraggingDistance(0);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Ajustar velocidad del scroll
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+
+    setDraggingDistance(Math.abs(walk)); // Registrar distancia movida
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleClick = (e) => {
+    // Si se arrastró más de 5px y el clic NO fue en la flecha, bloquearlo
+    if (draggingDistance > 5 && !e.target.closest(".expander-button")) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  };
 
   if (loading) return <p>Cargando liquidaciones...</p>;
   if (error) return <p>Error al cargar las liquidaciones.</p>;
@@ -173,7 +212,15 @@ const LiquidationTable = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto dark:bg-gray-800 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-900 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100  ">
+      <div
+        ref={scrollContainerRef}
+        className="overflow-x-auto cursor-grab active:cursor-grabbing select-none  scrollbar-hide"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseUp}
+        onMouseUp={handleMouseUp}
+        onClick={handleClick}
+      >
         <table className="datatable-table datatable-one w-full table-auto border-collapse overflow-hidden break-words px-4 md:table-fixed md:overflow-auto md:px-8">
           <thead className="border-separate px-4">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -258,7 +305,7 @@ const LiquidationTable = () => {
                 </tr>
 
                 {row.getIsExpanded() && (
-                  <tr className="border-t border-stroke dark:border-strokedark hover:bg-gray-2 hover:dark:bg-meta-4">
+                  <tr className="border-t bg-stroke dark:bg-strokedark border-stroke dark:border-strokedark hover:bg-gray-2 hover:dark:bg-meta-4">
                     <td colSpan={columns.length} className="px-4 py-5">
                       <h3 className="text-lg text-primary font-semibold">
                         Detalle de la liquidación

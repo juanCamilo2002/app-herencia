@@ -15,5 +15,6 @@ export const useLiquidations = () => {
     [dispatch]
   );
 
+  
   return { liquidations, loading, error, loadLiquidations };
 };

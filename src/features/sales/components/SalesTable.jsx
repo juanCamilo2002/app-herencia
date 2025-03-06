@@ -8,15 +8,11 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 import { useSales } from "../hooks/useSales";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import ArrowDatatableRight from "../../../assets/icons/arrow-datatable-right.svg?react";
 import ArrowDatatableLeft from "../../../assets/icons/arrow-datatable-left.svg?react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { toZonedTime  } from "date-fns-tz";
 
 const SalesTable = () => {
   const { sales, loading, error, loadSales } = useSales();
@@ -36,8 +32,11 @@ const SalesTable = () => {
       size: 10,
       cell: ({ row }) => (
         <button
-          onClick={() => row.toggleExpanded()}
-          className="text-blue-500 hover:underline flex justify-center items-center"
+          onClick={(e) => {
+            e.stopPropagation(); // Evita que el arrastre bloquee el clic en la flecha
+            row.toggleExpanded();
+          }}
+          className="expander-button text-blue-500 hover:underline flex justify-center items-center"
         >
           {row.getIsExpanded() ? (
             <ChevronDownIcon className="h-5 w-5 text-gray-500" />
@@ -69,6 +68,42 @@ const SalesTable = () => {
       },
     },
     {
+      accessorKey: "total",
+      header: "Total",
+      cell: ({ getValue }) => {
+        const value = getValue() ?? 0;
+        return `$${value.toLocaleString()}`;
+      },
+      filterFn: (row, id, filterValue) => {
+        return row.original.total.toString().includes(filterValue); 
+      },
+      size: 200,
+    },
+    {
+      accessorKey: "contributed",
+      header: "Abono",
+      cell: ({ getValue }) => {
+        const value = getValue() ?? 0;
+        return `$${value.toLocaleString()}`;
+      },
+      filterFn: (row, id, filterValue) => {
+        return row.original.contributed.toString().includes(filterValue);
+      },
+      size: 200,
+    },
+    {
+      accessorKey: "hasNotPaid",
+      header: "Debe",
+      cell: ({ getValue }) => {
+        const value = getValue() ?? 0;
+        return `$${value.toLocaleString()}`;
+      },
+      filterFn: (row, id, filterValue) => {
+        return row.original.hasNotPaid.toString().includes(filterValue);
+      },
+      size: 200,
+    },
+    {
       accessorKey: "saleType",
       header: "Tipo de Venta",
       cell: ({ getValue }) => {
@@ -98,62 +133,42 @@ const SalesTable = () => {
         return getValue() === true ? "Pagado" : "Pendiente";
       },
       filterFn: (row, id, filterValue) => {
-        if (!filterValue) return true;
-        return row.getValue(id) === filterValue;
-      },
-      size: 200,
-    },
-    {
-      accessorKey: "contributed",
-      header: "Aporte",
-      cell: ({ getValue }) => {
-        const value = getValue() ?? 0;
-        return `$${value.toLocaleString()}`;
-      },
-      filterFn: (row, id, filterValue) => {
-        return row.original.contributed.toString().includes(filterValue);
-      },
-      size: 200,
-    },
-    {
-      accessorKey: "hasNotPaid",
-      header: "Debe",
-      cell: ({ getValue }) => {
-        const value = getValue() ?? 0;
-        return `$${value.toLocaleString()}`;
-      },
-      filterFn: (row, id, filterValue) => {
-        return row.original.hasNotPaid.toString().includes(filterValue);
-      },
-      size: 200,
-    },
-    {
-      accessorKey: "total",
-      header: "Total",
-      cell: ({ getValue }) => {
-        const value = getValue() ?? 0;
-        return `$${value.toLocaleString()}`;
-      },
-      filterFn: (row, id, filterValue) => {
-        return row.original.total.toString().includes(filterValue);
+        if (filterValue === undefined) return true; // Mostrar todos si no hay filtro
+        return row.getValue(id) === (filterValue === "true");
       },
       size: 200,
     },
     {
       accessorKey: "paymentType",
-      header: "Tipo de Pago",
+      header: "Modo de venta",
       cell: ({ getValue }) => {
-        switch (getValue()) {
-          case "cash":
-            return "Efectivo";
-          case "consignment":
-            return "Consignación";
-          case "sample":
-            return "Muestra";
-        }
+        const translations = {
+          cash: "Contado",
+          consignment: "Consignación",
+          sample: "Muestra",
+        };
+        return translations[getValue()] || "Desconocido";
       },
       filterFn: (row, id, filterValue) => {
-        return row.original.paymentType.includes(filterValue);
+        if (!filterValue) return true; // Si el filtro está vacío, no hacer nada
+
+        // Normalizar el texto ingresado por el usuario (sin espacios y en minúsculas)
+        const normalizedFilterValue = filterValue.trim().toLowerCase();
+
+        // Mapa de traducción de valores escritos en español a claves internas
+        const filterMap = {
+          contado: "cash",
+          consignación: "consignment",
+          consignacion: "consignment", // Manejo sin tilde
+          muestra: "sample",
+        };
+
+        // Obtener el valor filtrado (si no está en el mapa, usa lo que escribió el usuario)
+        const expectedValue =
+          filterMap[normalizedFilterValue] || normalizedFilterValue;
+
+        // Comparar con el `paymentType` de la fila
+        return row.original.paymentType === expectedValue;
       },
       size: 200,
     },
@@ -161,12 +176,15 @@ const SalesTable = () => {
       accessorKey: "date",
       header: "Fecha",
       cell: ({ getValue }) => {
-        console.log(getValue())
-        const localDate = toZonedTime(getValue(), "America/Bogota");
+        const fecha = new Date(getValue());
+        const fechaUTC = new Date(
+          fecha.getUTCFullYear(),
+          fecha.getUTCMonth(),
+          fecha.getUTCDate()
+        );
+        const fechaFormateada = fechaUTC.toLocaleDateString("es-ES");
 
-        return format(localDate, "EEEE d 'de' MMMM 'de' yyyy", {
-          locale: es,
-        });
+        return fechaFormateada;
       },
       size: 200,
     },
@@ -185,6 +203,44 @@ const SalesTable = () => {
     onPaginationChange: setPagination,
     getRowCanExpand: () => true, // Habilita la expansión de filas
   });
+
+  const scrollContainerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [draggingDistance, setDraggingDistance] = useState(0);
+
+  const handleMouseDown = (e) => {
+    if (e.target.closest(".expander-button")) return; // Si el clic es en la flecha, no activar arrastre
+
+    setIsDragging(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+    setDraggingDistance(0);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Ajustar velocidad del scroll
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+
+    setDraggingDistance(Math.abs(walk)); // Registrar distancia movida
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleClick = (e) => {
+    // Si se arrastró más de 5px y el clic NO fue en la flecha, bloquearlo
+    if (draggingDistance > 5 && !e.target.closest(".expander-button") ) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  };
 
   if (loading) return <p>Cargando ventas...</p>;
   if (error) return <p>Error al cargar las ventas.</p>;
@@ -219,163 +275,186 @@ const SalesTable = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto dark:bg-gray-800 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-900 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100  ">
-        <table className="datatable-table datatable-one w-full table-auto border-collapse overflow-hidden break-words px-4 md:table-fixed md:overflow-auto md:px-8">
-          <thead className="border-separate px-4">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                className="border-t border-stroke dark:border-strokedark"
-              >
-                {headerGroup.headers.map((header) => (
-                  <th
-                    colSpan={1}
-                    key={header.id}
-                    className="px-4 py-2 cursor-pointer"
-                    style={{ width: header.column.getSize() }} // Establecer el tamaño de las columnas
-                  >
-                    <div className="flex flex-col items-center justify-center">
-                      {/* Ordenamiento */}
-                      <span
-                        className="cursor-pointer"
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {header.column.getIsSorted() === "asc"
-                          ? " 🔼"
-                          : header.column.getIsSorted() === "desc"
-                          ? " 🔽"
-                          : null}
-                      </span>
-
-                      {/* Input para filtrar por columna */}
-                      {/* Input para filtrar por columna */}
-                      {header.column.getCanFilter() &&
-                        (header.column.id === "saleType" ? (
-                          <select
-                            value={header.column.getFilterValue() || ""}
-                            onChange={(e) =>
-                              header.column.setFilterValue(e.target.value)
-                            }
-                            className="w-full min-w-[150px] rounded border-[1.5px] border-stroke px-3 py-1 font-normal outline-none focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
-                          >
-                            <option value="">Todos</option>
-                            <option value="wholesaler">Al por mayor</option>
-                            <option value="retailer">Detal</option>
-                          </select>
-                        ) : header.column.id === "statusPay" ? (
-                          <select
-                            value={header.column.getFilterValue() || ""}
-                            onChange={(e) =>
-                              header.column.setFilterValue(
-                                e.target.value === "true"
-                              )
-                            }
-                            className="w-full min-w-[150px] rounded border-[1.5px] border-stroke px-3 py-1 font-normal outline-none focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
-                          >
-                            <option value="">Todos</option>
-                            <option value="true">Pagado</option>
-                            <option value="false">Pendiente</option>
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            value={header.column.getFilterValue() || ""}
-                            onChange={(e) =>
-                              header.column.setFilterValue(e.target.value)
-                            }
-                            className="w-full min-w-[150px] rounded border-[1.5px] border-stroke px-3 py-1 font-normal outline-none focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
-                          />
-                        ))}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <>
+      <div className="  ">
+        <div
+          ref={scrollContainerRef}
+          className="overflow-x-auto cursor-grab active:cursor-grabbing select-none  scrollbar-hide"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseUp}
+          onMouseUp={handleMouseUp}
+          onClick={handleClick}
+        >
+          <table className="datatable-table datatable-one w-full table-auto border-collapse  break-words px-4 md:table-fixed md:px-8">
+            <thead className="border-separate px-4">
+              {table.getHeaderGroups().map((headerGroup) => (
                 <tr
-                  key={row.id}
-                  className={`border-t border-stroke dark:border-strokedark hover:bg-gray-2 hover:dark:bg-meta-4 transition duration-300 ${
-                    row.getIsExpanded() ? "bg-stroke dark:bg-strokedark" : ""
-                  }`}
+                  key={headerGroup.id}
+                  className="border-t border-stroke dark:border-strokedark"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-5">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      colSpan={1}
+                      key={header.id}
+                      className="px-4 py-2 cursor-pointer"
+                      style={{ width: header.column.getSize() }} // Establecer el tamaño de las columnas
+                    >
+                      <div className="flex flex-col items-center justify-center">
+                        {/* Ordenamiento */}
+                        <span
+                          className="cursor-pointer"
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getIsSorted() === "asc"
+                            ? " 🔼"
+                            : header.column.getIsSorted() === "desc"
+                            ? " 🔽"
+                            : null}
+                        </span>
+
+                        {/* Input para filtrar por columna */}
+                        {/* Input para filtrar por columna */}
+                        {header.column.getCanFilter() &&
+                          (header.column.id === "saleType" ? (
+                            <select
+                              value={header.column.getFilterValue() || ""}
+                              onChange={(e) =>
+                                header.column.setFilterValue(e.target.value)
+                              }
+                              className="w-full min-w-[150px] rounded border-[1.5px] border-stroke px-3 py-1 font-normal outline-none focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+                            >
+                              <option value="">Todos</option>
+                              <option value="wholesaler">Al por mayor</option>
+                              <option value="retailer">Detal</option>
+                            </select>
+                          ) : header.column.id === "statusPay" ? (
+                            <select
+                              value={header.column.getFilterValue() ?? ""}
+                              onChange={(e) =>
+                                header.column.setFilterValue(
+                                  e.target.value === ""
+                                    ? undefined
+                                    : e.target.value
+                                )
+                              }
+                              className="w-full min-w-[150px] rounded border-[1.5px] border-stroke px-3 py-1 font-normal outline-none focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+                            >
+                              <option value="">Todos</option>
+                              <option value="true">Pagado</option>
+                              <option value="false">Pendiente</option>
+                            </select>
+                          ) : header.column.id === "paymentType" ? (
+                            <select
+                              value={header.column.getFilterValue() || ""}
+                              onChange={(e) =>
+                                header.column.setFilterValue(e.target.value)
+                              }
+                              className="w-full min-w-[150px] rounded border-[1.5px] border-stroke px-3 py-1 font-normal outline-none focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+                            >
+                              <option value="">Todos</option>
+                              <option value="Contado">Contado</option>
+                              <option value="Muestra">Muestra</option>
+                              <option value="Consignacion">Consignación</option>
+                            </select>
+                          ) : (
+                            <input
+                              type="text"
+                              value={header.column.getFilterValue() || ""}
+                              onChange={(e) =>
+                                header.column.setFilterValue(e.target.value)
+                              }
+                              className="w-full min-w-[150px] rounded border-[1.5px] border-stroke px-3 py-1 font-normal outline-none focus:border-primary dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+                            />
+                          ))}
+                      </div>
+                    </th>
                   ))}
                 </tr>
-
-                {row.getIsExpanded() && (
-                  <tr className="border-t border-stroke dark:border-strokedark hover:bg-gray-2 hover:dark:bg-meta-4">
-                    <td colSpan={columns.length} className="px-4 py-5">
-                      <h3 className="text-lg text-primary font-semibold">
-                        Detalle de la venta
-                      </h3>
-                      <table className="datatable-table datatable-one border-b border-stroke dark:border-strokedark w-full table-auto border-collapse overflow-hidden break-words px-4 md:table-fixed md:overflow-auto md:px-8">
-                        <thead className="border-separate px-4">
-                          <tr>
-                            <th className="p-2 ">Producto</th>
-                            <th className="p-2 ">Cantidad</th>
-                            <th className="p-2 ">Valor Unitario</th>
-                            <th className="p-2 ">Iva</th>
-                            <th className="p-2 ">Impuesto al consumo</th>
-                            <th className="p-2 ">Estampilla</th>
-                            <th className="p-2 ">Valor neto unitario</th>
-                            <th className="p-2 ">Sub total</th>
-                            <th className="p-2 ">Facturado</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {row.original.items.map((item) => (
-                            <tr
-                              key={item.product._id}
-                              className="border-t border-stroke text-center dark:border-strokedark"
-                            >
-                              <td className="px-4 py-5">{item.product.name}</td>
-                              <td className="px-4 py-5">{item.quantity}</td>
-                              <td className="px-4 py-5">
-                                ${item.unitValue.toLocaleString()}
-                              </td>
-
-                              <td className="px-4 py-5">
-                                ${item.iva.toLocaleString()}
-                              </td>
-                              <td className="px-4 py-5">
-                                ${item.ipo.toLocaleString()}
-                              </td>
-                              <td className="px-4 py-5">
-                                ${item.stamp.toLocaleString()}
-                              </td>
-                              <td className="px-4 py-5">
-                                ${item.netUnitValue.toLocaleString()}
-                              </td>
-                              <td className="px-4 py-5">
-                                ${item.subTotal.toLocaleString()}
-                              </td>
-                              <td className="px-4 py-5">
-                                {item.invoiced ? "Sí" : "No"}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </td>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <>
+                  <tr
+                    key={row.id}
+                    className={`border-t border-stroke dark:border-strokedark hover:bg-gray-2 hover:dark:bg-meta-4 transition duration-300 ${
+                      row.getIsExpanded() ? "bg-stroke dark:bg-strokedark" : ""
+                    }`}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-5">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
                   </tr>
-                )}
-              </>
-            ))}
-          </tbody>
-        </table>
+
+                  {row.getIsExpanded() && (
+                    <tr className="border-t bg-stroke dark:bg-strokedark border-stroke dark:border-strokedark  hover:dark:bg-meta-4">
+                      <td colSpan={columns.length} className="px-4 py-5">
+                        <h3 className="text-lg text-primary font-semibold">
+                          Detalle de la venta
+                        </h3>
+                        <table className="datatable-table datatable-one border-b border-stroke dark:border-strokedark w-full table-auto border-collapse overflow-hidden break-words px-4 md:table-fixed md:overflow-auto md:px-8">
+                          <thead className="border-separate px-4">
+                            <tr>
+                              <th className="p-2 ">Producto</th>
+                              <th className="p-2 ">Cantidad</th>
+                              <th className="p-2 ">Valor Unitario</th>
+                              <th className="p-2 ">Iva</th>
+                              <th className="p-2 ">Impuesto al consumo</th>
+                              <th className="p-2 ">Estampilla</th>
+                              <th className="p-2 ">Valor neto unitario</th>
+                              <th className="p-2 ">Sub total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {row.original.items.map((item) => (
+                              <tr
+                                key={item.product._id}
+                                className="border-t border-stroke text-center dark:border-strokedark"
+                              >
+                                <td className="px-4 py-5">
+                                  {item.product.name}
+                                </td>
+                                <td className="px-4 py-5">{item.quantity}</td>
+                                <td className="px-4 py-5">
+                                  ${item.unitValue.toLocaleString()}
+                                </td>
+
+                                <td className="px-4 py-5">
+                                  ${item.iva.toLocaleString()}
+                                </td>
+                                <td className="px-4 py-5">
+                                  ${item.ipo.toLocaleString()}
+                                </td>
+                                <td className="px-4 py-5">
+                                  ${item.stamp.toLocaleString()}
+                                </td>
+                                <td className="px-4 py-5">
+                                  ${item.netUnitValue.toLocaleString()}
+                                </td>
+                                <td className="px-4 py-5">
+                                  ${item.subTotal.toLocaleString()}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-center border-t border-stroke px-6 pt-5 dark:border-strokedark">

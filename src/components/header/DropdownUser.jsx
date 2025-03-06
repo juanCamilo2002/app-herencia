@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
-import UserOne from '../../assets/user/user-01.png';
+import UserOne from '../../assets/user/profile.jpg';
 import ArrowDropdownIcon from '../../assets/icons/arrow-dropdown.svg?react';
 import PersonTwoIcon from '../../assets/icons/person-two.svg?react';
 import ContactIcon from '../../assets/icons/contact.svg?react';
@@ -68,7 +68,7 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+          <img src={UserOne} alt="User" className='object-cover h-12 w-12 rounded-full'/>
         </span>
 
         <ArrowDropdownIcon className={`hidden fill-current sm:block ${dropdownOpen ? 'rotate-180' : ''

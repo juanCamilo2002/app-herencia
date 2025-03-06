@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import SelectFilter from "../../../components/forms/selects/SelectFilter";
+import Select from "../../../components/forms/selects/Select";
 import InputForm from "../../../components/forms/inputs/InputForm";
 import { useCustomers } from "../../customers/hooks/useCustomers";
 import { useSellers } from "../../sellers/hooks/useSellers";
@@ -15,19 +16,7 @@ const FormSale = () => {
   const { paymentMethods, loadPaymentMethods } = usePaymentMethods();
   const { products, loadProducts } = useProducts();
   const { addSale } = useSales();
-  const [items, setItems] = useState([
-    {
-      id: Date.now(),
-      product: {
-        value: products[0]?._id || "",
-        label: products[0]?.name || "",
-      },
-      quantity: "",
-      unitValue: "",
-      invoiced: false,
-      includesStamp: false,
-    },
-  ]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     loadCustomers();
@@ -42,7 +31,8 @@ const FormSale = () => {
       seller: "",
       paymentMethod: "",
       saleType: "",
-      contributed: "",
+      contributed: 0,
+      paymentType: "",
       date: "",
       items: [],
     },
@@ -51,9 +41,8 @@ const FormSale = () => {
       values.customer = values.customer.value;
       values.seller = values.seller.value;
       values.paymentMethod = values.paymentMethod.value;
-      values.paymentType = "consignment";
       values.saleType = values.saleType.value;
-      values.date= new Date(`${values.date}T00:00:00.000Z`);
+      values.date = new Date(`${values.date}T00:00:00.000Z`);
       values.items = values.items.map((item) => ({
         ...item,
         product: item.product.value,
@@ -67,7 +56,8 @@ const FormSale = () => {
     formik.setFieldValue("items", items);
   }, [items]);
 
-  const addItem = () => {
+  const addItem = (e) => {
+    e.preventDefault();
     setItems([
       ...items,
       {
@@ -89,6 +79,19 @@ const FormSale = () => {
     const newItems = [...items];
     newItems[index][field] = value;
     setItems(newItems);
+  };
+
+  const formatCurrency = (value) => {
+    if (!value) return "";
+    return new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      minimumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const parseCurrency = (value) => {
+    return Number(value.replace(/[^0-9]/g, ""));
   };
 
   return (
@@ -147,6 +150,28 @@ const FormSale = () => {
             error={formik.touched.saleType && formik.errors.saleType}
           />
         </div>
+        <Select
+          label="Modo de venta"
+          maxWidth
+          required
+          valueOption={"value"}
+          name="paymentType"
+          labelOption={"label"}
+          options={[
+            { value: "cash", label: "Contado" },
+            { value: "sample", label: "Muestra" },
+            { value: "consignment", label: "Consignación" },
+          ]}
+          value={formik.values.paymentType}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={
+            formik.errors.paymentType &&
+            formik.touched.paymentType
+              ? formik.errors.paymentType
+              : null
+          }
+        />
         <InputForm
           label="Fecha de venta"
           type="date"
@@ -156,29 +181,13 @@ const FormSale = () => {
           onChange={formik.handleChange}
           error={formik.touched.date && formik.errors.date}
         />
-        <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-          <InputForm
-            label="Abono"
-            type="number"
-            placeholder="0"
-            name="contributed"
-            value={formik.values.contributed}
-            onChange={formik.handleChange}
-            error={formik.touched.contributed && formik.errors.contributed}
-          />
-          <InputForm
-            label="Total"
-            type="number"
-            value={formik.values.items.reduce(
-              (acc, item) => acc + item.quantity * item.unitValue,
-              0
-            )}
-          />
-        </div>
         {/* 📌 Productos */}
         <h3 className="text-lg font-bold text-black dark:text-white mb-3">
           Detalles de la venta
         </h3>
+        {formik.touched.items && typeof formik.errors.items === "string" && (
+          <p className="text-danger">{formik.errors.items}</p>
+        )}
 
         {items.map((item, index) => (
           <div
@@ -212,13 +221,14 @@ const FormSale = () => {
               />
               <InputForm
                 label="Precio"
-                type="number"
-                placeholder="0"
+                type="text"
+                placeholder="$ 0"
                 name={`items[${index}].unitValue`}
-                value={item.unitValue}
-                onChange={(e) =>
-                  handleItemChange(index, "unitValue", Number(e.target.value))
-                }
+                value={formatCurrency(item.unitValue)}
+                onChange={(e) => {
+                  const parsedValue = parseCurrency(e.target.value);
+                  handleItemChange(index, "unitValue", parsedValue);
+                }}
                 error={formik.errors.items?.[index]?.unitValue}
               />
             </div>
@@ -254,9 +264,35 @@ const FormSale = () => {
           </div>
         ))}
 
+        <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+          <InputForm
+            label="Abono"
+            type="text"
+            placeholder="$ 0"
+            name="contributed"
+            value={formatCurrency(formik.values.contributed)}
+            onChange={(e) => {
+              const parsedValue = parseCurrency(e.target.value);
+              formik.setFieldValue("contributed", parsedValue);
+            }}
+            error={formik.touched.contributed && formik.errors.contributed}
+          />
+          <InputForm
+            label="Total"
+            type="text"
+            placeholder="$ 0"
+            value={formatCurrency(
+              formik.values.items.reduce(
+                (acc, item) => acc + item.quantity * item.unitValue,
+                0
+              )
+            )}
+          />
+        </div>
+
         <button
           type="button"
-          onClick={addItem}
+          onClick={(e) => addItem(e)}
           className="bg-meta-4 text-white mr-1 px-4 py-2 rounded"
         >
           Agregar Producto

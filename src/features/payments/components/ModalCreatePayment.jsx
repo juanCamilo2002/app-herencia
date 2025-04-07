@@ -2,7 +2,7 @@ import React from "react";
 import ModalContainer from "../../../components/modals/ModalContainer";
 import { DialogTitle } from "@headlessui/react";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
-import PaymentForm from "./paymentForm";
+import PaymentForm from "./PaymentForm";
 
 const ModalCreatePayment = ({ open, onClose, sale }) => {
   return (

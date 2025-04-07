@@ -9,6 +9,8 @@ import paymentMethodsReducer from "./features/common/store/paymentMethodSlice";
 import productsReducer from "./features/products/store/productSlice";
 import liquidationsReducer from "./features/liquidations/store/liquidationSlice";
 import payLiquidationReducer from "./features/liquidations/store/payLiquidationSlice";
+import paymentsReducers from "./features/payments/store/paymentSlice";
+import movementsReducer from "./features/movements/store/movementSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,5 +24,7 @@ export const store = configureStore({
     products: productsReducer,
     liquidations: liquidationsReducer,
     payLiquidation: payLiquidationReducer,
+    payments: paymentsReducers,
+    movements: movementsReducer,
   },
 });

@@ -11,6 +11,8 @@ import Sales from './features/sales/pages/Sales';
 import CustomersPage from './features/customers/pages/CustomersPage';
 import SellersPage from './features/sellers/pages/SellersPage';
 import LiquidationsPage from './features/liquidations/pages/LiquidationsPage';
+import MovementsPage from './features/movements/pages/MovementsPage';
+import ProductsPage from './features/products/page/ProductsPage';
 
 const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -26,6 +28,8 @@ const App = () => {
             <Route path='/customers' element={<CustomersPage/>} />
             <Route path='/sellers' element={<SellersPage/>} />
             <Route path='/liquidations' element={<LiquidationsPage/>} />
+            <Route path='/movements' element={<MovementsPage/>} />
+            <Route path='/products' element={<ProductsPage/>} />
 
           </Route>
         </Route>

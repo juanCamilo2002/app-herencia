@@ -315,7 +315,7 @@ const LiquidationTable = () => {
                           <tr>
                             <th className="p-2 ">Producto</th>
                             <th className="p-2 ">Cantidad</th>
-                            <th className="p-2 ">Valor Unitario</th>
+                            <th className="p-2 ">Valor Unitario (Valor aplicado)</th>
                             <th className="p-2 ">Porcentaje de comisión</th>
                             <th className="p-2 ">Valor comisión producto</th>
                           </tr>
@@ -329,7 +329,7 @@ const LiquidationTable = () => {
                               <td className="px-4 py-5">{item.product.name}</td>
                               <td className="px-4 py-5">{item.quantity}</td>
                               <td className="px-4 py-5">
-                                ${item.unitValue.toLocaleString()}
+                                ${item.unitValue.toLocaleString()} (${item.commissionBaseValue.toLocaleString()})
                               </td>
                               <td className="px-4 py-5">{item.percent}%</td>
                               <td className="px-4 py-5">

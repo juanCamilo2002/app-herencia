@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { saleService } from "../services/saleService";
 
 const initialState = {
@@ -15,15 +15,73 @@ export const fetchSales = createAsyncThunk(
   }
 );
 
-export const createSale = createAsyncThunk('sales/createSales', async (newSale) => {
-  const response = await saleService.createSale(newSale);
-  return response.data.data;
-});
+export const createSale = createAsyncThunk(
+  "sales/createSales",
+  async (newSale) => {
+    const response = await saleService.createSale(newSale);
+    return response.data.data;
+  }
+);
 
 const saleSlice = createSlice({
   name: "sales",
   initialState,
-  reducers: {},
+  reducers: {
+    createPaymentSale: (state, action) => {
+      const payment = action.payload;
+      const index = state.sales.findIndex((sale) => sale._id === payment.sale);
+      if (index !== -1) {
+        const currentSale = state.sales[index];
+        const newContributed = currentSale.contributed + payment.amount;
+        const newHasNotPaid = currentSale.hasNotPaid - payment.amount;
+
+        state.sales[index] = {
+          ...currentSale,
+          contributed: newContributed,
+          hasNotPaid: newHasNotPaid,
+          statusPay: newContributed >= currentSale.total,
+        };
+      }
+    },
+    updatePaymentSale: (state, action) => {
+      const { oldPayment, updatedPayment } = action.payload;
+      console.log({ oldPayment, updatedPayment });
+      const index = state.sales.findIndex(
+        (sale) => sale._id === updatedPayment.sale._id
+      );
+      if (index !== -1) {
+        const currentSale = state.sales[index];
+        const newContributed =
+          currentSale.contributed - oldPayment.amount + updatedPayment.amount;
+        const newHasNotPaid =
+          currentSale.hasNotPaid + oldPayment.amount - updatedPayment.amount;
+
+        state.sales[index] = {
+          ...currentSale,
+          contributed: newContributed,
+          hasNotPaid: newHasNotPaid,
+          statusPay: newContributed >= currentSale.total,
+        };
+      }
+    },
+
+    deletePaymentSale: (state, action) => {
+      const payment = action.payload;
+      const index = state.sales.findIndex((sale) => sale._id === payment.sale._id);
+      if (index !== -1) {
+        const currentSale = state.sales[index];
+        const newContributed = currentSale.contributed - payment.amount;
+        const newHasNotPaid = currentSale.hasNotPaid + payment.amount;
+  
+        state.sales[index] = {
+          ...currentSale,
+          contributed: newContributed,
+          hasNotPaid: newHasNotPaid,
+          statusPay: newContributed >= currentSale.total,
+        };
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchSales.pending, (state) => {
@@ -52,4 +110,5 @@ const saleSlice = createSlice({
   },
 });
 
+export const { createPaymentSale, updatePaymentSale, deletePaymentSale } = saleSlice.actions;
 export default saleSlice.reducer;
